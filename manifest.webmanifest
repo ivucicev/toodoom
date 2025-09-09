@@ -1,0 +1,14 @@
+{
+  "name": "Kaboo",
+  "short_name": "Kaboo",
+  "description": "Tasks with tags and categories, offline-first.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0f1216",
+  "theme_color": "#1f2a36",
+  "icons": [
+    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
