@@ -1,0 +1,701 @@
+        :root {
+            --bg: #f6f8fb;
+            --card-radius: 22px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, .12);
+            --shadow-soft: 0 2px 10px rgba(0, 0, 0, .06);
+            --text: #1f2a36;
+            --card-text: #1f2a36;
+            --muted: #5a6876;
+            --card-muted: #5a6876;
+        }
+
+        /* Prevent iOS Safari auto-inverting form controls; align UA widgets */
+        :root { color-scheme: light; }
+        :root[data-theme="dark"] { color-scheme: dark; }
+
+        /* Dark theme overrides */
+        [data-theme="dark"] {
+            --bg: #0f1216;
+            --text: #e8eef6;
+            --card-text: #1f2a36;
+            --muted: #9aa7b4;
+            --card-muted: #5a6876;
+            --shadow: 0 8px 24px rgba(0, 0, 0, .12);
+            --shadow-soft: 0 2px 10px rgba(0, 0, 0, .06);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            margin: 0;
+            font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+            color: var(--text);
+            background: var(--bg);
+            display: grid;
+            place-items: start center;
+            padding: 16px 0px 96px
+        }
+
+        .app {
+            width: min(880px, 100%)
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        header .top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        .lists {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: #fff;
+            border: 1px solid #e5e9ef;
+            border-radius: 12px;
+            padding: 8px 12px;
+            box-shadow: var(--shadow-soft);
+            font: inherit;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .list-add {
+            border: 1px solid #e5e9ef;
+            background: #fff;
+            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Hide list selector controls now that categories are primary */
+        .list-select, .list-add { display: none; }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: .2px;
+            margin: 0
+        }
+
+        .chips {
+            display: grid;
+            gap: 6px
+        }
+
+        /* Chip rows are single-line and scroll horizontally */
+        .chips .row { white-space: nowrap; }
+
+        /* Hide scrollbars (keep scrolling) */
+        .row, .list {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 10+ */
+        }
+        .row::-webkit-scrollbar, .list::-webkit-scrollbar { display: none; } /* WebKit */
+
+        .row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 6px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid #e5e9ef;
+            box-shadow: var(--shadow-soft);
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            flex: 0 0 auto;
+        }
+
+        [data-theme="dark"] .chip { background: #151a21; border-color: #2a3340; }
+
+        .chip .del {
+            display: inline-grid;
+            place-items: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            color: var(--muted);
+            cursor: pointer;
+            opacity: 1 !important;
+        }
+        /* Always visible delete control */
+        /* transition not needed when always visible */
+
+        .chip .x {
+            font-weight: 700
+        }
+
+        .chip.active {
+            border-color: #c7d1e0
+        }
+
+        .quick {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            background: #fff;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-soft);
+            align-items: center
+        }
+
+        .quick input {
+            flex: 1;
+            border: 0;
+            outline: 0;
+            font: inherit;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f1f4f8
+        }
+
+        /* Improve iOS Safari dark mode readability for quick add */
+        [data-theme="dark"] .quick { background: #151a21; }
+        [data-theme="dark"] .quick input { background: #10151c; color: var(--card-text);; -webkit-text-fill-color: var(--card-text); }
+        [data-theme="dark"] .quick input::placeholder { color: var(--card-text);; }
+
+        /* Ensure dark text color in iOS Safari for all form fields */
+        :root[data-theme="dark"] input,
+        :root[data-theme="dark"] textarea,
+        :root[data-theme="dark"] select { color: var(--card-text); -webkit-text-fill-color: var(--card-text); }
+
+        .quick button {
+            border: 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: var(--text);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600
+        }
+
+        .list {
+            display: grid;
+            gap: 0;
+            padding-left: 16px;
+            padding-top: 16px;
+            padding-bottom: 25px;
+            padding-right: 16px;
+            max-height: calc(100vh - 153px);
+            overflow-y: auto;
+        }
+
+        /* Notes grid layout */
+        .list.notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            align-content: start;
+            padding-bottom: 8px;
+            padding-top: 16px
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--card-radius);
+            color: var(--card-text);
+            background: linear-gradient(120deg, var(--c1), var(--c2));
+            box-shadow: var(--shadow);
+            isolation: isolate;
+            cursor: pointer
+        }
+
+        /* Dark mode: keep gradients but improve text readability with subtle overlay */
+        [data-theme="dark"] .card::after {
+            /*content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), inset 0 -36px 60px rgba(0,0,0,.22);
+            background: rgba(0,0,0,.28);*/
+        }
+
+        /* Dark mode: increase contrast/readability on cards */
+        [data-theme="dark"] .card {
+            /*background: linear-gradient(135deg, var(--c1), var(--c2)), linear-gradient(0deg, rgba(0,0,0,.35), rgba(0,0,0,.35)) !important;
+            background-blend-mode: overlay;
+            border: 1px solid #2a3340; */
+        }
+
+        /* Target iOS Safari to slightly increase dark overlay for gradients */
+        @supports (-webkit-touch-callout: none) {
+            [data-theme="dark"] .card::after { background: rgba(0,0,0,.42); }
+        }
+
+        .card:not(:first-child) {
+            margin-top: 10px
+        }
+
+        .rowx {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: start;
+            padding: 22px
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 400;
+            margin: 0
+        }
+
+        /* Invert entire card in dark mode for readability */
+        [data-theme="dark"] .card { filter: invert(1); }
+
+        .card.done .title {
+            text-decoration: line-through;
+            opacity: .8;
+        }
+
+        .desc {
+            margin: 0;
+            color: var(--card-muted);
+            max-width: 52ch;
+            font-size: 16px;
+            padding: 0 22px 22px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card:not(:hover):not(.touch-active) .desc {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+        }
+
+        .card:hover .desc,
+        .card.touch-active .desc {
+            max-height: 200px;
+            padding-top: 0;
+            padding-bottom: 22px;
+            opacity: 1;
+        }
+
+        /* Show a subtle indicator when description is collapsed */
+        .card:not(:hover) .desc:not(:empty)::before {
+            content: "⋯";
+            color: var(--card-muted);
+            opacity: 0.6;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .card:hover .desc::before {
+            display: none;
+        }
+
+        /* Inline add card inputs */
+        .title-input {
+            font-size: 18px;
+            font-weight: 400;
+            margin: 0;
+            border: 0;
+            outline: 0;
+            width: 100%;
+            background: transparent;
+            color: inherit;
+        }
+
+        /* Inputs on dark card */
+        /*[data-theme="dark"] .card .title-input, [data-theme="dark"] .card .desc-input { color: #eef3f9; }
+        [data-theme="dark"] .card .title-input::placeholder, [data-theme="dark"] .card .desc-input::placeholder { color: #cfd8e4; }
+*/
+        .desc-input {
+            display: block;
+            width: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--muted);
+            font: inherit;
+            font-size: 16px;
+            padding: 0 22px 22px;
+            resize: vertical;
+            min-height: 44px;
+        }
+
+        .title-input::placeholder,
+        .desc-input::placeholder {
+            color: #8a95a3;
+        }
+
+        .tags {
+            margin: 0;
+            font-size: 14px;
+            color: var(--muted);
+            padding: 0 22px 22px
+        }
+
+        .tags span {
+            margin-right: 6px;
+            cursor: pointer
+        }
+
+        /* Strengthen text contrast inside cards on dark */
+        /*[data-theme="dark"] .title { color: #eef3f9; }
+        [data-theme="dark"] .desc { color: #aab6c4; }*/
+
+        .check {
+            min-width: 24px;
+            min-height: 24px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            /*border: 2px solid rgba(0, 0, 0, .2);*/
+            background: rgba(255, 255, 255, .5);
+            cursor: pointer
+        }
+
+        /*[data-theme="dark"] .card .check { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.12); color: #f3f7fb; }
+        [data-theme="dark"] .check {
+            border-color: #3a4554;
+            background: rgba(255,255,255,.08);
+            color: var(--text);
+        }
+        [data-theme="dark"] .card .check.done { background: rgba(0,0,0,.7); color: #fff; border-color: transparent; }
+
+        [data-theme="dark"] .check.done {
+            background: rgba(255,255,255,.22);
+            color: #fff;
+        } */
+
+        /* Animations */
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.98)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(.98)
+            }
+
+            100% {
+                transform: scale(1)
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, .18)
+            }
+
+            100% {
+                box-shadow: 0 0 0 14px rgba(0, 0, 0, 0)
+            }
+        }
+
+        .card {
+            will-change: transform, opacity
+        }
+
+        .card.enter {
+            animation: cardIn .35s cubic-bezier(.2, .8, .2, 1) both
+        }
+
+        .card.solving {
+            animation: pop .22s ease
+        }
+
+        .check.pulse {
+            animation: pulse .6s ease-out
+        }
+
+        .card.done {
+            filter: grayscale(1) brightness(.8);
+            opacity: .7;
+        }
+
+        [data-theme="dark"] .card.done {
+            filter: grayscale(1) brightness(.4);
+            opacity: .7;
+        }
+
+        /* Sticky note styles */
+        .note-card {
+            position: relative;
+            border-radius: 12px;
+            padding: 14px;
+            background: #fffad1;
+            box-shadow: var(--shadow);
+            color: #1b2430;
+            cursor: pointer;
+            transition: transform .12s ease;
+            display: flex;
+            flex-direction: column;
+            aspect-ratio: 1 / 1;
+        }
+        .note-card:hover { transform: translateY(-2px); }
+        .note-card .text {
+            margin: 0;
+            white-space: pre-wrap;
+            overflow: auto;
+            max-height: 40vh;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .note-card .tags { padding: 10px 0 0; font-size: 13px; color: #4b5563; }
+        .note-card .tags span { color: inherit; }
+        .note-card .del {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(0,0,0,.06);
+            color: currentColor;
+        }
+        .note-card .pin {
+            position: absolute;
+            top: 8px;
+            right: 40px;
+            width: 22px;
+            height: 22px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(0,0,0,.06);
+            color: currentColor;
+            display: none;
+        }
+        /* Small add note card */
+        .note-new { display: grid; gap: 8px; }
+        .note-input {
+            width: 100%;
+            min-height: 60px;
+            border: 0;
+            outline: 0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: transparent;
+            box-shadow: none;
+            font: inherit;
+            height: 100%;
+            overflow: auto;
+            color: inherit;
+        }
+        
+        /* Dark mode for notes */
+        [data-theme="dark"] .note-card { filter: invert(1); }
+
+        /* Suggestions dropdown */
+        .suggest {
+            background: #fff;
+            border: 1px solid #e5e9ef;
+            box-shadow: var(--shadow-soft);
+            border-radius: 12px;
+            margin: 0 22px 14px;
+            overflow: hidden;
+        }
+
+        /* Dark mode for suggestions dropdown */
+        [data-theme="dark"] .suggest { background: #151a21; border-color: #2a3340; }
+        [data-theme="dark"] .suggest .item { 
+           color: #e8eef6;
+        }
+        [data-theme="dark"] .suggest .item.active { background: rgba(255,255,255,.06); }
+
+        .suggest.hidden { display: none; }
+
+        .suggest .item {
+            padding: 10px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .suggest .item + .item { border-top: 1px solid #f0f3f7; }
+
+        .suggest .item.active {
+            background: #f6f8fb;
+        }
+
+        .account-btn {
+            display: inline-grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e5e9ef;
+            background: #fff;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .account-btn:hover { filter: brightness(0.98); }
+
+        [data-theme="dark"] .account-btn { background: #151a21; border-color: #2a3340; }
+
+        .share-btn {
+            display: inline-grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e5e9ef;
+            background: #fff;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            color: var(--text);
+            margin-right: 6px;
+        }
+        .share-btn:hover { filter: brightness(0.98); }
+
+        [data-theme="dark"] .share-btn { background: #151a21; border-color: #2a3340; }
+
+        .theme-btn { composes: account-btn; }
+
+        /* Actions menu shares account menu styles */
+        .account .menu .item.disabled { opacity: .5; pointer-events: none; }
+
+        /* Invite modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.32);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-backdrop.show { display: flex; }
+        .modal {
+            width: min(460px, 92vw);
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e5e9ef;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .modal .mh { padding: 14px 16px; font-weight: 700; border-bottom: 1px solid #f0f3f7; }
+        .modal .mc { padding: 16px; display: grid; gap: 12px; }
+        .modal .mf { padding: 12px 16px; border-top: 1px solid #f0f3f7; display: flex; gap: 8px; justify-content: flex-end; }
+        .modal input, .modal textarea {
+            width: 100%;
+            border: 1px solid #e5e9ef;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            font: inherit;
+        }
+        .modal input::placeholder, .modal textarea::placeholder { color: #8a95a3; }
+        .btn {
+            border: 1px solid #e5e9ef;
+            border-radius: 10px;
+            padding: 8px 12px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .btn.primary { background: var(--text); color: #fff; border-color: transparent; }
+        
+        .err { color: #b42318; font-size: 13px; display:none; }
+
+        /* Dark mode for modal */
+        [data-theme="dark"] .modal { background: #151a21; border-color: #2a3340; color: #e8eef6; box-shadow: 0 20px 40px rgba(0,0,0,.6); }
+        [data-theme="dark"] .modal .mh { border-bottom-color: #263042; }
+        [data-theme="dark"] .modal .mf { border-top-color: #263042; }
+        [data-theme="dark"] .modal input, [data-theme="dark"] .modal textarea {
+            background: #10151c;
+            border-color: #2a3340;
+            color: #e8eef6;
+        }
+        [data-theme="dark"] .modal input::placeholder, [data-theme="dark"] .modal textarea::placeholder { color: #a2afbd; }
+        [data-theme="dark"] .btn { background: #151a21; border-color: #2a3340; color: #e8eef6; }
+        [data-theme="dark"] .btn.primary { background: #3a78ff; color: #fff; border-color: transparent; }
+
+        .account { position: relative; }
+        .account .menu {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e5e9ef;
+            box-shadow: var(--shadow);
+            border-radius: 12px;
+            min-width: 240px;
+            padding: 6px;
+            z-index: 9999;
+        }
+        .account .menu.hidden { display: none; }
+        .account .menu .item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .account .menu .item:hover { background: #f6f8fb; }
+        .account .menu .divider { height: 1px; background: #f0f3f7; margin: 6px 0; }
+
+        /* Dark mode for popover menus */
+        [data-theme="dark"] .account .menu {
+            background: #151a21 !important;
+            border-color: #2a3340 !important;
+            box-shadow: 0 10px 28px rgba(0,0,0,.6) !important;
+        }
+        [data-theme="dark"] .account .menu .item { color: #ffffff; }
+        [data-theme="dark"] .account .menu .item:hover { background: rgba(255,255,255,.06); }
+        [data-theme="dark"] .account .menu .divider { background: #263042; }
