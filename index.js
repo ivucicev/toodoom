@@ -83,7 +83,10 @@ function renderListSelector() {
 
 async function save() {
     const { saveLists } = await import('./storage.js');
-    await saveLists(listsState);
+    try {
+        await saveLists(listsState);
+        } catch (error) {
+        }
 }
 
 window.filter = null;
@@ -210,7 +213,7 @@ function taskCard(task, index) {
     card.style.setProperty('--c2', task.grad.c2);
     card.style.background = `linear-gradient(135deg, ${task.grad.c1}, ${task.grad.c2})`;
 
-    card.ondblclick = () => { card.classList.add('solving'); setTimeout(() => { task.done = !task.done; save(); render(); }, 180) };
+    //card.ondblclick = () => { card.classList.add('solving'); setTimeout(() => { task.done = !task.done; save(); render(); }, 180) };
 
     // Touch events for mobile
     card.addEventListener('touchstart', () => card.classList.add('touch-active'));
@@ -238,13 +241,31 @@ function taskCard(task, index) {
     const rowx = ce('div', { className: 'rowx' });
     const title = ce('h2', { className: 'title', textContent: task.title });
     const check = ce('div', { className: 'check' + (task.done ? ' done' : ''), innerHTML: task.done ? '✓' : '' });
-    check.onclick = e => { e.stopPropagation(); check.classList.add('pulse'); card.classList.add('solving'); setTimeout(() => { task.done = !task.done; save(); render(); }, 180) };
+    check.onclick = async e => { 
+        e.stopPropagation(); 
+        check.classList.add('pulse'); 
+        card.classList.add('solving'); 
+        setTimeout(async () => { 
+            task.done = !task.done; 
+            try {
+                const { getPb } = await import('./auth.js');
+                const pb = getPb();
+                if (pb && pb.authStore.isValid && task.id) {
+                    await pb.collection('tasks').update(task.id, { done: task.done });
+                }
+            } catch (err) {
+                console.error("Failed to sync toggle done (check click) to PocketBase", err);
+            }
+            save(); 
+            render(); 
+        }, 180) 
+    };
 
     rowx.append(title, check); card.append(rowx);
     if (task.desc) { card.append(ce('p', { className: 'desc', textContent: task.desc })) }
 
     // Enable inline editing on click
-    card.onclick = () => {
+    card.ondblclick = () => {
         const editCard = ce('article', { className: 'card enter' });
         editCard.style.setProperty('--c1', task.grad.c1);
         editCard.style.setProperty('--c2', task.grad.c2);
@@ -258,11 +279,26 @@ function taskCard(task, index) {
         });
         const check = ce('div', { className: 'check', innerHTML: '✓' });
 
-        function submitEdit() {
+        async function submitEdit() {
             const v = (titleInput.value || '').trim();
             if (!v) { render(); return; }
             task.title = v;
             task.desc = (descInput.value || '').trim();
+            try {
+                const { getPb } = await import('./auth.js');
+                const pb = getPb();
+                if (pb && pb.authStore.isValid && task.id) {
+                    await pb.collection('tasks').update(task.id, {
+                        title: task.title,
+                        desc: task.desc,
+                        tags: task.tags || [],
+                        category: task.category || getActiveListName(),
+                        done: task.done
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to sync task edit to PocketBase", err);
+            }
             save();
             render();
         }
@@ -910,18 +946,35 @@ render();
         if (!hasCompleted) return;
         if (!confirm('Delete all completed tasks in @' + name + '?')) return;
         const kept = tasks.filter(t => !t.done);
-        const toDelete = tasks.filter(t => t.done && t.id);
+        const toDelete = tasks.filter(t => t.done);
         listsState.lists[name] = kept;
-        await save();
+        await save(); 
         try {
             const { getPb } = await import('./auth.js');
             const pb = getPb();
             if (pb && pb.authStore.isValid) {
-                for (const t of toDelete) {
-                    await pb.collection('tasks').delete(t.id);
+                // Fallback: delete tasks one by one to ensure compatibility
+                const ids = toDelete.filter(t => t.id).map(t => t.id);
+                if (ids.length) {
+                    let successCount = 0;
+                    for (const id of ids) {
+                        try {
+                            await pb.collection('tasks').delete(id);
+                            successCount++;
+                        } catch (err) {
+                            console.error("Failed to delete task", id, err);
+                        }
+                    }
+                    showToast("Deleted " + successCount + " tasks", "success");
+                } else {
+                    console.warn("No valid task IDs to delete from PB");
                 }
+            } else {
+                showToast("Not logged in", "error");
+                console.warn("PocketBase not available or not authenticated");
             }
         } catch (err) {
+            showToast("Delete completed sync failed", "error");
             console.error("Failed to sync deleteCompleted to PocketBase", err);
         }
         closeActions();
