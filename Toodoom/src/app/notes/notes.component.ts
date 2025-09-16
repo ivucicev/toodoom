@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { INote, PocketbaseService } from '../core/pocketbase.service';
+import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 
 @Component({
 	selector: 'app-notes',
-	imports: [FormsModule],
+	imports: [FormsModule, MentionableDirective],
 	templateUrl: './notes.component.html',
 	styleUrl: './notes.component.css'
 })
@@ -74,10 +75,11 @@ export class NotesComponent {
 
 		if (this.text.trim() === '' && this.editText === '') return;
 
-		let category = this.notesCategories().find(cat => cat.name === this.selectedCategory);
-
 		const catMatch = editNote ? this.editText.match(/@(\w+)/) : this.text.match(/@(\w+)/);
 		const categoryMatch = catMatch ? catMatch[1] : '';
+
+		let category = this.notesCategories().find(cat => (cat.name == categoryMatch) 
+		|| (categoryMatch == '' && cat.name == this.selectedCategory));
 
 		if (!category && categoryMatch) {
 			const list = await this.pb.createNoteList({
@@ -122,7 +124,7 @@ export class NotesComponent {
 		const listName = category?.id ? category.name : 'default';
 
 		if (!allNotes[listName]) {
-			allNotes[listName] = { tasks: [], tags: [] };
+			allNotes[listName] = { notes: [], tags: [] };
 		}
 
 		if (editNote) {
@@ -162,6 +164,19 @@ export class NotesComponent {
 
 	toggleTag(tag: string) {
 		this.selectedTag = this.selectedTag === tag ? '' : tag;
+	}
+
+	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, note?: INote) {
+		if (mention.consumeSelection()) {
+			return;
+		}
+		if (mention.isActive()) {
+			return;
+		}
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			this.upsertNote(note);
+		}
 	}
 
 }

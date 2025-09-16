@@ -1,10 +1,11 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ITask, PocketbaseService } from '../core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
+import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 
 @Component({
 	selector: 'app-tasks',
-	imports: [FormsModule],
+	imports: [FormsModule, MentionableDirective],
 	templateUrl: './tasks.component.html',
 	styleUrl: './tasks.component.css'
 })
@@ -82,11 +83,12 @@ export class TasksComponent {
 	async upsertTask(editTask?: ITask | null) {
 
 		if (this.title.trim() === '' && this.editTitle === '') return;
-
-		let category = this.taskCategories().find(cat => cat.name === this.selectedCategory);
-
+		
 		const catMatch = editTask ? this.editTitle.match(/@(\w+)/) : this.title.match(/@(\w+)/);
 		const categoryMatch = catMatch ? catMatch[1] : '';
+
+		let category = this.taskCategories().find(cat => (cat.name == categoryMatch) 
+		|| (categoryMatch == '' && cat.name == this.selectedCategory));
 
 		if (!category && categoryMatch) {
 			const list = await this.pb.createList({
@@ -193,6 +195,19 @@ export class TasksComponent {
 		this.editTaskId = '';
 		this.editTitle = '';
 		this.editDesc = '';
+	}
+
+	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, task?: ITask | null) {
+		if (mention.consumeSelection()) {
+			return;
+		}
+		if (mention.isActive()) {
+			return;
+		}
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			this.upsertTask(task ?? undefined);
+		}
 	}
 
 }

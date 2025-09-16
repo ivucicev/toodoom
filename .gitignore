@@ -1,3 +1,8 @@
 ./pb_data
 ./pb_migrations
 pocketbase
+pb_data/auxiliary.db
+pb_data/auxiliary.db
+pb_data/auxiliary.db-shm
+pb_data/auxiliary.db-wal
+pb_data/data.db
