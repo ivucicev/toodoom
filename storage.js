@@ -28,8 +28,8 @@ function saveLocalNotes(notes) {
 async function loadPbLists() {
     const pb = getPb();
     const userId = pb.authStore.model.id;
-    const lists = await pb.collection('lists').getFullList({ filter: `owner="${userId}"` });
-    const tasks = await pb.collection('tasks').getFullList({ filter: `list.owner="${userId}"` });
+    const lists = await pb.collection('lists').getFullList({ expand: 'participants' });
+    const tasks = await pb.collection('tasks').getFullList({ expand: 'user' });
     const listsObj = {};
     lists.forEach(list => {
         listsObj[list.name] = tasks.filter(t => t.list === list.id).map(t => ({
@@ -38,6 +38,8 @@ async function loadPbLists() {
             desc: t.desc,
             tags: t.tags,
             done: t.done,
+            participants: list.expand?.participants || [],
+            username: t.expand?.user?.email?.split('@')[0],
             grad_seed: (typeof t.grad_seed === "number") ? t.grad_seed : (t.grad_seed = Math.random()),
             grad: softGradient(t.grad_seed),
             category: list.name
@@ -51,7 +53,8 @@ async function loadPbLists() {
             if (activeListObj) activeList = activeListObj.name;
         }
     } catch {}
-    return { activeList, lists: listsObj };
+    await checkInvites(); // pre-fetch invites
+    return { activeList, lists: listsObj, allLists: lists };
 }
 
 async function savePbLists(listsState) {
@@ -60,7 +63,7 @@ async function savePbLists(listsState) {
     for (const [name, tasks] of Object.entries(listsState.lists)) {
         let list;
         try {
-            list = await pb.collection('lists').getFirstListItem(`owner="${userId}" && name="${name}"`);
+            list = await pb.collection('lists').getFirstListItem(`name="${name}"`);
         } catch {
             list = await pb.collection('lists').create({
                 name,
@@ -79,6 +82,7 @@ async function savePbLists(listsState) {
                     desc: t.desc,
                     tags: t.tags,
                     done: t.done,
+                    user: pb.authStore.record.id,
                     grad_seed: gradSeed
                 });
                 t.id = created.id;
@@ -201,8 +205,6 @@ async function savePbNotes(notesState) {
     }
 }
 
-// (removed duplicate loadPbNotes/savePbNotes definitions — keep only the first, complete implementation above)
-
 // --- API ---
 export async function loadLists() {
     if (await isLoggedIn()) return await loadPbLists();
@@ -220,6 +222,20 @@ export async function loadNotes() {
 export async function saveNotes(notes) {
     if (await isLoggedIn()) return await savePbNotes(notes);
     return saveLocalNotes(notes);
+}
+
+export async function checkInvites() {
+    if (await isLoggedIn()) {
+        const pb = getPb();
+        try {
+            const res = await pb.send('/api/check-invites', {});
+            return res || [];
+        } catch (e) {
+            console.error("Failed to check invites", e);
+            return [];
+        }
+    }
+    return [];
 }
 
 // --- API for deleting a note ---
@@ -243,9 +259,7 @@ export async function deleteNote(noteId) {
     }
 }
 
-// Utility for gradients
 function softGradient(seed) {
-    // Deterministic gradient generator from numeric seed
     function mulberry32(a) {
         return function() {
             var t = a += 0x6D2B79F5;

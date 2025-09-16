@@ -1,0 +1,198 @@
+import { Component, input, signal } from '@angular/core';
+import { ITask, PocketbaseService } from '../core/pocketbase.service';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+	selector: 'app-tasks',
+	imports: [FormsModule],
+	templateUrl: './tasks.component.html',
+	styleUrl: './tasks.component.css'
+})
+export class TasksComponent {
+
+	public title = '';
+	public desc = '';
+
+	public editTitle = '';
+	public editDesc = '';
+
+	public tasks: any = signal({ default: { tasks: [], tags: [] } });
+	public taskCategories = signal<{ id: string, name: string }[]>([]);
+
+	public selectedCategory = '';
+	public selectedTag?: string = '';
+	public newTaskColor = { c1: '', c2: '' };
+	public editTaskId = '';
+
+	constructor(private pb: PocketbaseService) {
+		this.newTaskColor = this.pb.softGradient(Math.random());
+		this.getTasks();
+	}
+
+	private async getTasks() {
+
+		const tasks: any = await this.pb.getTasks();
+
+		const categoriesMap = new Map<string, { id: string, name: string }>();
+
+		for (const task of tasks) {
+			const list = task.expand?.list;
+			if (list && !categoriesMap.has(list.id)) {
+				categoriesMap.set(list.id, { id: list.id, name: list.name });
+			}
+		}
+
+		const categories = Array.from(categoriesMap.values());
+		this.taskCategories.set(categories);
+		const categorizedTasks: any = { default: { tasks: [], tags: [] } };
+
+		for (const task of tasks) {
+			const listName = task.expand?.list?.name || 'default';
+			if (!categorizedTasks[listName]) {
+				categorizedTasks[listName] = { tasks: [], tags: [] };
+			}
+			categorizedTasks[listName].tasks.push(task);
+			if (Array.isArray(task['tags'])) {
+				categorizedTasks[listName].tags.push(...task['tags']);
+			}
+
+			task.grad = this.pb.softGradient(task.grad_seed);
+		}
+		// Remove duplicate tags for each category
+		for (const key in categorizedTasks) {
+			categorizedTasks[key].tags = Array.from(new Set(categorizedTasks[key].tags));
+		}
+
+		this.tasks.set(categorizedTasks);
+	}
+
+	toggleCategory(name: string) {
+		if (this.selectedCategory === name) {
+			this.selectedCategory = '';
+			return;
+		}
+		this.selectedCategory = name;
+	}
+
+	async deleteCategory(id: string, name: string) {
+		await this.pb.deleteCategory(id);
+		await this.getTasks()
+	}
+
+	async upsertTask(editTask?: ITask | null) {
+
+		if (this.title.trim() === '' && this.editTitle === '') return;
+
+		let category = this.taskCategories().find(cat => cat.name === this.selectedCategory);
+
+		const catMatch = editTask ? this.editTitle.match(/@(\w+)/) : this.title.match(/@(\w+)/);
+		const categoryMatch = catMatch ? catMatch[1] : '';
+
+		if (!category && categoryMatch) {
+			const list = await this.pb.createList({
+				id: '',
+				name: categoryMatch,
+				owner: this.pb.currentUser.id,
+				sort_order: 0,
+				grad_seed: Math.random(),
+				participants: []
+			});
+
+			this.taskCategories.set([...this.taskCategories(), { id: list.id, name: list.name }]);
+			category = { id: list.id, name: list.name };
+
+		}
+
+		let task = editTask;;
+		if (task && editTask) {
+			task.title = this.editTitle.replace(/#\w+/g, '').replace(/@\w+/, '').trim();
+			task.desc = this.editDesc;
+			task.list = category?.id;
+			const newTags = [...this.editTitle.matchAll(/#(\w+)/g)].map(m => m[1]);
+			task.tags = Array.from(new Set([...(editTask.tags || []), ...newTags]));
+		} else {
+			const seed = Math.random();
+			task = {
+				id: '',
+				title: this.title.replace(/#\w+/g, '').replace(/@\w+/, '').trim(),
+				desc: this.desc,
+				list: category?.id,
+				done: false,
+				tags: [...this.title.matchAll(/#(\w+)/g)].map(m => m[1]),
+				position: 0,
+				grad_seed: seed,
+				grad: this.pb.softGradient(seed),
+				user: this.pb.currentUser.id
+			}
+		}
+
+		const savedTask = await this.pb.upsertTask(task as ITask);
+
+		task.id = savedTask.id;
+
+		const allTasks = { ...this.tasks() };
+
+		const listName = category?.id ? category.name : 'default';
+
+		if (!allTasks[listName]) {
+			allTasks[listName] = { tasks: [], tags: [] };
+		}
+
+		if (editTask) {
+			// Update existing task in place
+			const idx = allTasks[listName].tasks.findIndex((t: ITask) => t.id === task.id);
+			if (idx !== -1) {
+				allTasks[listName].tasks[idx] = task;
+			}
+		} else {
+			allTasks[listName].tasks.unshift(task);
+			if (Array.isArray(task.tags)) {
+				allTasks[listName].tags = Array.from(new Set([...(allTasks[listName].tags || []), ...task.tags]));
+			}
+		}
+
+		this.tasks.set(allTasks);
+
+		this.title = '';
+		this.desc = '';
+		this.editDesc = '';
+		this.editTitle = '';
+		this.editTaskId = '';
+
+		this.selectedCategory = category?.name || '';
+		this.newTaskColor = this.pb.softGradient(Math.random());
+	}
+
+	async editTask(task: ITask) {
+		this.editTaskId = task.id;
+		this.editTitle = task.title;
+		this.editDesc = task.desc || '';
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+
+	}
+
+	async deleteTask(id: string) {
+		await this.pb.deleteTask(id);
+		const allTasks = { ...this.tasks() };
+		for (const key in allTasks) {
+			allTasks[key].tasks = allTasks[key].tasks.filter((t: ITask) => t.id !== id);
+		}
+		this.tasks.set(allTasks);
+	}
+
+	async toggleTask(task: ITask) {
+		task.done = !task.done;
+		await this.pb.upsertTask(task);
+	}
+
+	async toggleTag(tag: string) {
+		this.selectedTag = this.selectedTag === tag ? '' : tag;
+	}
+
+	focusNewTask(e: any) {
+		this.editTaskId = '';
+		this.editTitle = '';
+		this.editDesc = '';
+	}
+
+}

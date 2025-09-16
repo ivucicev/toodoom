@@ -1,0 +1,107 @@
+<div class="list" id="list">
+    <div class="chips">
+        @if(taskCategories().length > 0) {
+        <div class="row" id="catsRow">
+            @for(task of taskCategories(); track task.id) {
+            <span (click)="toggleCategory(task.name)" class="chip"
+                title="Filter by @{{task.name}}"><span>&#64;{{task.name}}</span>
+                @if (selectedCategory == task.name) {
+                <span class="x">×</span>
+                }
+                <span (click)="$event.stopPropagation(); deleteCategory(task.id, task.name)" class="del"
+                    title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </span>
+            </span>
+            }
+        </div>
+        }
+        @if (tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tags.length > 0) {
+        <div class="row" id="tagsRow">
+            @for(tag of tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tags; track tag) {
+            <span class="chip" title="Filter by #{{tag}}" (click)="toggleTag(tag)">
+                <span>#{{ tag }}</span>
+                @if (selectedTag == tag) {
+                <span class="x">×</span>
+                }
+            </span>
+            }
+        </div>
+        }
+    </div>
+
+    <article class="card enter" [style.--c1]="newTaskColor.c1" [style.--c2]="newTaskColor.c2"
+        [style.background]="'linear-gradient(135deg,' + newTaskColor.c1 + ', ' + newTaskColor.c2 + ')'">
+        <form (ngSubmit)="upsertTask()">
+            <div class="rowx">
+                <input (focus)="focusNewTask($event)" [(ngModel)]="title" name="title" class="title-input"
+                    placeholder="Add a new task with #tags and @category" autocomplete="off">
+                <div class="check" (click)="upsertTask()">+</div>
+            </div>
+            <textarea [(ngModel)]="desc" name="desc" class="desc-input" placeholder="Optional description"></textarea>
+            <div class="suggest hidden"></div>
+        </form>
+    </article>
+
+    @for(task of tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tasks; track task) {
+    @if(selectedTag == '' || task.tags.includes(selectedTag)) {
+    @if (editTaskId == task.id) {
+    <article class="card enter" [style.--c1]="task?.grad?.c1" [style.--c2]="task?.grad?.c2"
+        [style.background]="'linear-gradient(135deg,' + task?.grad?.c1 + ', ' + task?.grad?.c2 + ')'"
+        style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
+        <form (submit)="upsertTask(task)">
+            <div class="rowx">
+                <input class="title-input" autocomplete="off" [(ngModel)]="editTitle" name="title"
+                    placeholder="Task title" autofocus>
+                <div class="check" (click)="upsertTask(task)">✓</div>
+                <div (click)="deleteTask(task.id)" class="delTask check"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                    </svg></div>
+            </div>
+            <textarea class="desc-input" [(ngModel)]="editDesc" name="desc"
+                placeholder="Optional description"></textarea>
+        </form>
+    </article>
+    } @else {
+    <article (click)="editTask(task)" (dblclick)="toggleTask(task)" class="card enter" [class.done]="task.done"
+        [class.solving]="!task.done" [class.solving]="task.done" [style.--c1]="task?.grad?.c1"
+        [style.--c2]="task?.grad?.c2"
+        [style.background]="'linear-gradient(135deg,' + task?.grad?.c1 + ', ' + task?.grad?.c2 + ')'"
+        style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
+        <div class="rowx">
+            <h2 class="title">{{ task.title }}</h2>
+            <div class="check" (click)="toggleTask(task)">
+                @if (task.done) {✓}
+            </div>
+        </div>
+        <p class="desc">{{ task.desc }}</p>
+        @for(tag of task.tags; track tag) {
+        <div class="tags">#{{tag}}</div>
+        }
+        @if(task.expand?.list?.name) {
+        <div class="tags">&#64;{{task.expand.list.name}}</div>
+        }
+        @if (task.list && task.list.partcipants?.length > 0) {
+        <span class="tags" style="float: right;">👤 {{ task.expand.user.email }}</span>
+        }
+    </article>
+    }
+    }
+
+    }
+
+
+</div>

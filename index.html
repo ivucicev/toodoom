@@ -115,13 +115,17 @@
             <div class="mh" id="inviteTitle">Invite to list</div>
             <div class="mc">
                 <div id="inviteDesc" style="color:var(--muted); font-size:14px;"></div>
-                <label style="font-size:13px; color:var(--muted);">Emails (comma or newline separated)</label>
+                <label style="font-size:13px; color:var(--muted);">Emails (comma separated)</label>
                 <textarea id="inviteEmails" rows="4" placeholder="name@example.com, user2@example.com"></textarea>
                 <div class="err" id="inviteErr">Please enter at least one valid email.</div>
+                <div class="shared-users-section" style="margin-bottom:16px;">
+                    <label style="font-size:13px; color:var(--muted);">Shared with</label>
+                    <ul id="sharedUsersList" style="list-style:none; padding:0; margin:8px 0;"></ul>
+                </div>
             </div>
             <div class="mf">
                 <button class="btn" id="inviteCancel">Cancel</button>
-                <button class="btn primary" id="inviteSend">Send invites</button>
+                <button class="btn primary" id="inviteSend">Share</button>
             </div>
         </div>
     </div>

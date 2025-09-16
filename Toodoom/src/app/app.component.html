@@ -1,0 +1,222 @@
+<header>
+	<div class="top">
+		<div class="lists">
+			@if (appMode === 'tasks') {
+			<h1>Tasks</h1>
+			} @else {
+			<h1>Notes</h1>}
+			<select id="listSelect" class="list-select" aria-label="Select list"></select>
+			<button id="listAdd" class="list-add" title="Create list" aria-label="Create list">+</button>
+		</div>
+		<div style="display:flex; align-items:center; gap:8px;">
+			<button (click)="toggleAppMode()" class="account-btn" id="modeBtn" title="Toggle Tasks/Notes"
+				aria-label="Toggle mode">
+				@if (appMode === 'tasks') {
+				<svg id="modeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+					fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="3" y="3" width="7" height="7" />
+					<rect x="14" y="3" width="7" height="7" />
+					<rect x="14" y="14" width="7" height="7" />
+					<rect x="3" y="14" width="7" height="7" />
+				</svg>
+				} @else {
+				<svg id="modeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+					fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 7h18"></path>
+					<path d="M3 12h18"></path>
+					<path d="M3 17h12"></path>
+				</svg>
+				}
+			</button>
+			<div class="account" style="position:relative;">
+				@if (appMode === 'tasks') {
+				<button (click)="toggleActionsModal()" class="account-btn" id="actionsBtn" title="Actions"
+					aria-label="Actions" aria-expanded="false" aria-haspopup="menu">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="1" />
+						<circle cx="19" cy="12" r="1" />
+						<circle cx="5" cy="12" r="1" />
+					</svg>
+				</button>
+				}
+				@if (actionsModalOpen){
+				<div class="modal-backdrop" (click)="toggleActionsModal()">
+					<div (click)="$event.stopPropagation()" class="menu" id="actionsMenu" role="menu"
+						aria-labelledby="actionsBtn">
+						<div class="item" role="menuitem" id="actCompleteAll"
+							style="padding:8px 12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path d="M20 6L9 17l-5-5" />
+							</svg>
+							<span>Complete all</span>
+						</div>
+						<div class="item" role="menuitem" id="actDeleteCompleted"
+							style="padding:8px 12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<polyline points="3 6 5 6 21 6" />
+								<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+								<path d="M10 11v6" />
+								<path d="M14 11v6" />
+								<path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+							</svg>
+							<span>Delete completed</span>
+						</div>
+					</div>
+				</div>
+				}
+			</div>
+			@if (appMode === 'tasks') {
+			<button (click)="toggleShareActionsModal()" class="share-btn" id="shareBtn" title="Share category"
+				aria-label="Share category">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="18" cy="5" r="3" />
+					<circle cx="6" cy="12" r="3" />
+					<circle cx="18" cy="19" r="3" />
+					<line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+					<line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+				</svg>
+			</button>
+			}
+			<button (click)="toggleTheme()" class="account-btn" id="themeBtn" title="Toggle theme"
+				aria-label="Toggle theme">
+				@if (!isDark) {
+				<svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+					fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+				</svg>
+				} @else {
+				<svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+					fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="5"></circle>
+					<path d="M12 1v2"></path>
+					<path d="M12 21v2"></path>
+					<path d="M4.22 4.22l1.42 1.42"></path>
+					<path d="M18.36 18.36l1.42 1.42"></path>
+					<path d="M1 12h2"></path>
+					<path d="M21 12h2"></path>
+					<path d="M4.22 19.78l1.42-1.42"></path>
+					<path d="M18.36 5.64l1.42-1.42"></path>
+				</svg>
+				}
+			</button>
+			<div class="account">
+				<span id="username">{{ username }}</span>
+				<button (click)="toggleAccountMenu()" class="account-btn" id="accountBtn" title="Account"
+					aria-label="Account" aria-expanded="false" aria-haspopup="menu">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M20 21a8 8 0 0 0-16 0" />
+						<circle cx="12" cy="7" r="4" />
+					</svg>
+				</button>
+				@if (accountMenuOpen) {
+				<div class="modal-backdrop" (click)="toggleAccountMenu()">
+					<div (click)="$event.stopPropagation()" class="menu" id="accountMenu" role="menu"
+						aria-labelledby="accountBtn">
+						@if (!isLoggedIn) {
+						<div (click)="toggleRegisterModal()" class="item" role="menuitem" id="menuRegister">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path d="M12 20v-6M6 12h12" />
+							</svg>
+							<span>Register</span>
+						</div>
+						<div (click)="toggleLoginModal()" class="item" role="menuitem" id="menuLogin">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+								<polyline points="10 17 15 12 10 7" />
+								<line x1="15" y1="12" x2="3" y2="12" />
+							</svg>
+							<span>Login</span>
+						</div>
+						} @else {
+						<div (click)="logout()" class="item" role="menuitem" id="menuSignOut">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round">
+								<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+								<polyline points="16 17 21 12 16 7" />
+								<line x1="21" y1="12" x2="9" y2="12" />
+							</svg>
+							<span>Sign out</span>
+						</div>
+						}
+					</div>
+				</div>
+				}
+			</div>
+		</div>
+	</div>
+</header>
+
+<router-outlet />
+
+@if (registerModalOpen) {
+<div class="modal-backdrop" id="registerBackdrop" aria-hidden="true" (click)="toggleRegisterModal()">
+	<div class="modal" role="dialog" aria-modal="true" aria-labelledby="registerTitle"
+		(click)="$event.stopPropagation()">
+		<div class="mh" id="registerTitle">Register</div>
+		<div class="mc">
+			<label>Email</label>
+			<input type="email" id="registerEmail" placeholder="you@example.com" />
+			<label>Password</label>
+			<input type="password" id="registerPassword" placeholder="Enter password" />
+			<label>Confirm Password</label>
+			<input type="password" id="registerPasswordConfirm" placeholder="Confirm password" />
+			<button class="btn primary" id="registerSubmit">Register</button>
+		</div>
+		<div class="mf">
+			<button class="btn" id="registerCancel" (click)="toggleRegisterModal()">Cancel</button>
+		</div>
+	</div>
+</div>
+}
+
+@if (loginModalOpen) {
+<div class="modal-backdrop" id="loginBackdrop" (click)="toggleLoginModal()">
+	<div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" (click)="$event.stopPropagation()">
+		<div class="mh" id="loginTitle">Login</div>
+		<div class="mc">
+			<label>Email</label>
+			<input [(ngModel)]="email" type="email" id="loginEmail" placeholder="you@example.com" />
+			<label>Password</label>
+			<input [(ngModel)]="password" type="password" id="loginPassword" placeholder="Enter password" />
+			<button class="btn primary" id="loginSubmit" (click)="login()">Login</button>
+		</div>
+		<div class="mf">
+			<button class="btn" id="loginCancel" (click)="toggleLoginModal()">Cancel</button>
+		</div>
+	</div>
+</div>
+}
+
+@if (shareActionsModalOpen) {
+<div class="modal-backdrop" id="inviteBackdrop" (click)="toggleShareActionsModal()">
+	<div class="modal" role="dialog" aria-modal="true" aria-labelledby="inviteTitle" (click)="$event.stopPropagation()">
+		<div class="mh" id="inviteTitle">Invite to list</div>
+		<div class="mc">
+			<div id="inviteDesc" style="color:var(--muted); font-size:14px;"></div>
+			<label style="font-size:13px; color:var(--muted);">Emails (comma separated)</label>
+			<textarea id="inviteEmails" rows="4" placeholder="name@example.com, user2@example.com"></textarea>
+			<div class="err" id="inviteErr">Please enter at least one valid email.</div>
+			<div class="shared-users-section" style="margin-bottom:16px;">
+				<label style="font-size:13px; color:var(--muted);">Shared with</label>
+				<ul id="sharedUsersList" style="list-style:none; padding:0; margin:8px 0;"></ul>
+			</div>
+		</div>
+		<div class="mf">
+			<button class="btn" id="inviteCancel" (click)="toggleShareActionsModal()">Cancel</button>
+			<button class="btn primary" id="inviteSend">Share</button>
+		</div>
+	</div>
+</div>
+}

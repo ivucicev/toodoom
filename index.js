@@ -35,9 +35,11 @@ function saveNotes(notes) {
 }
 
 
+import { getPb } from './auth.js';
 import { loadLists as loadStorageLists, saveLists as saveStorageLists, loadNotes as loadStorageNotes, saveNotes as saveStorageNotes, isLoggedIn } from './storage.js';
 
 let listsState = await loadStorageLists();
+let allLists = listsState.allLists || {};
 let notesState = await loadStorageNotes();
 let appMode = localStorage.getItem(MODE_KEY) || 'tasks';
 
@@ -85,8 +87,8 @@ async function save() {
     const { saveLists } = await import('./storage.js');
     try {
         await saveLists(listsState);
-        } catch (error) {
-        }
+    } catch (error) {
+    }
 }
 
 window.filter = null;
@@ -166,6 +168,7 @@ function render() {
         if (window.filter) { const [type, val] = window.filter; notes = notes.filter(n => (n.tags || []).includes(val)); }
         notes.forEach((n, i) => list.appendChild(noteCard(n, i)));
     }
+
     updateURLForList(getActiveListName());
 
     // Toggle visibility of actions button
@@ -204,6 +207,7 @@ function parseInput(text) {
 };
 
 function taskCard(task, index) {
+    console.log(task)
     const card = ce('article', { className: 'card enter' + (task.done ? ' done' : '') });
     card.style.zIndex = String(index + 1);
     card.style.zIndex = String(1000 - index);
@@ -213,7 +217,7 @@ function taskCard(task, index) {
     card.style.setProperty('--c2', task.grad.c2);
     card.style.background = `linear-gradient(135deg, ${task.grad.c1}, ${task.grad.c2})`;
 
-    //card.ondblclick = () => { card.classList.add('solving'); setTimeout(() => { task.done = !task.done; save(); render(); }, 180) };
+    card.ondblclick = () => { card.classList.add('solving'); setTimeout(() => { task.done = !task.done; save(); render(); }, 180) };
 
     // Touch events for mobile
     card.addEventListener('touchstart', () => card.classList.add('touch-active'));
@@ -232,6 +236,19 @@ function taskCard(task, index) {
                 const name = getActiveListName();
                 const tasks = listsState.lists[name] || [];
                 listsState.lists[name] = tasks.filter(t => t.id !== task.id);
+                (async () => {
+                    try {
+                        const { getPb } = await import('./auth.js');
+                        const pb = getPb();
+                        if (pb && pb.authStore.isValid && task.id) {
+                            await pb.collection('tasks').delete(task.id);
+                            showToast("Deleted task: " + task.title, "success");
+                        }
+                    } catch (err) {
+                        showToast("Failed to delete task", "error");
+                        console.error("Failed to delete task from PocketBase", err);
+                    }
+                })();
                 save();
                 render();
             }
@@ -241,12 +258,12 @@ function taskCard(task, index) {
     const rowx = ce('div', { className: 'rowx' });
     const title = ce('h2', { className: 'title', textContent: task.title });
     const check = ce('div', { className: 'check' + (task.done ? ' done' : ''), innerHTML: task.done ? '✓' : '' });
-    check.onclick = async e => { 
-        e.stopPropagation(); 
-        check.classList.add('pulse'); 
-        card.classList.add('solving'); 
-        setTimeout(async () => { 
-            task.done = !task.done; 
+    check.onclick = async e => {
+        e.stopPropagation();
+        check.classList.add('pulse');
+        card.classList.add('solving');
+        setTimeout(async () => {
+            task.done = !task.done;
             try {
                 const { getPb } = await import('./auth.js');
                 const pb = getPb();
@@ -256,16 +273,34 @@ function taskCard(task, index) {
             } catch (err) {
                 console.error("Failed to sync toggle done (check click) to PocketBase", err);
             }
-            save(); 
-            render(); 
-        }, 180) 
+            save();
+            render();
+        }, 180)
     };
 
     rowx.append(title, check); card.append(rowx);
     if (task.desc) { card.append(ce('p', { className: 'desc', textContent: task.desc })) }
 
     // Enable inline editing on click
-    card.ondblclick = () => {
+    // Long press to edit (instead of double click)
+    let longPressTimer = null;
+    let longPressTriggered = false;
+
+    function startLongPress(e) {
+        if (longPressTimer) clearTimeout(longPressTimer);
+        longPressTriggered = false;
+        longPressTimer = setTimeout(() => {
+            longPressTriggered = true;
+            showEditTask();
+        }, 500); // 500ms for long press
+    }
+
+    function cancelLongPress() {
+        if (longPressTimer) clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+
+    function showEditTask() {
         const editCard = ce('article', { className: 'card enter' });
         editCard.style.setProperty('--c1', task.grad.c1);
         editCard.style.setProperty('--c2', task.grad.c2);
@@ -278,6 +313,7 @@ function taskCard(task, index) {
             autocomplete: 'off'
         });
         const check = ce('div', { className: 'check', innerHTML: '✓' });
+        const delTask = ce('div', { className: 'delTask check', innerHTML: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg>' });
 
         async function submitEdit() {
             const v = (titleInput.value || '').trim();
@@ -304,12 +340,36 @@ function taskCard(task, index) {
         }
 
         check.onclick = (e) => { e.stopPropagation(); submitEdit(); };
+
+        delTask.onclick = (e) => {
+            e.stopPropagation();
+            if (!confirm('Delete this task?')) return;
+            const name = getActiveListName();
+            const tasks = listsState.lists[name] || [];
+            listsState.lists[name] = tasks.filter(t => t.id !== task.id);
+            (async () => {
+                try {
+                    const { getPb } = await import('./auth.js');
+                    const pb = getPb();
+                    if (pb && pb.authStore.isValid && task.id) {
+                        await pb.collection('tasks').delete(task.id);
+                        showToast("Deleted task: " + task.title, "success");
+                    }
+                } catch (err) {
+                    showToast("Failed to delete task", "error");
+                    console.error("Failed to delete task from PocketBase", err);
+                }
+            })();
+            save();
+            render();
+        };
+
         titleInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); submitEdit(); }
             if (e.key === 'Escape') { e.preventDefault(); render(); }
         });
 
-        rowx.append(titleInput, check);
+        rowx.append(titleInput, check, delTask);
         editCard.append(rowx);
 
         const descInput = ce('textarea', { className: 'desc-input', value: task.desc || '', placeholder: 'Optional description' });
@@ -317,7 +377,25 @@ function taskCard(task, index) {
 
         card.replaceWith(editCard);
         titleInput.focus();
-    };
+    }
+
+    // Desktop: fallback to double click for edit
+    card.ondblclick = (e) => { e.stopPropagation(); showEditTask(); };
+    // Touch: long press for edit (do not interfere with swipe/delete)
+    card.addEventListener('touchstart', (e) => {
+        // Only start long press if single finger and not already handled by swipe
+        if (e.touches.length === 1) startLongPress(e);
+    });
+    card.addEventListener('touchend', (e) => {
+        if (!longPressTriggered) cancelLongPress();
+    });
+    card.addEventListener('touchmove', cancelLongPress);
+    card.addEventListener('touchcancel', cancelLongPress);
+
+    if (task.participants && task.participants.length && task.username) {
+        const userTag = ce('span', { className: 'tags', style: 'float: right;', textContent: '👤 ' + task.username.toLowerCase() });
+        card.append(userTag);
+    }
 
     if ((task.tags && task.tags.length) || (task.category && task.category !== 'Default')) {
         const tagsDiv = ce('div', { className: 'tags' });
@@ -860,6 +938,81 @@ if ('serviceWorker' in navigator) {
 // Render including inline add card and list selector
 renderListSelector();
 render();
+initSubscriptions();
+
+async function initSubscriptions() {
+    try {
+        const pb = getPb();
+        if (pb && pb.authStore.isValid) {
+            await pb.collection('tasks').subscribe('*', async (e) => {
+                try {
+                    const cat = getActiveListName();
+                    // fetch tasks only for current active list
+                    const tasks = await pb.collection('tasks').getFullList({
+                        filter: `list="${e.record.list}"`,
+                        sort: '-created',
+                        expand: 'list,list.participants,user'
+                    });
+                    listsState.lists[cat] = tasks.map(t => ({
+                        id: t.id,
+                        title: t.title,
+                        desc: t.desc,
+                        tags: t.tags,
+                        done: t.done,
+                        participants: t.expand.list ? t.expand.list.participants : [],
+                        username: t.expand.user ? (t.expand.user.email || '').split('@')[0] : null,
+                        category: t.category,
+                        grad: t.grad || softGradient(Math.random())
+                    }));
+                    //save();
+                    render();
+                } catch (err) {
+                    console.error("Failed to update tasks from subscription", err);
+                }
+            }, { expand: 'list,list.participants' });
+        }
+    } catch (err) {
+        console.error("Failed to init subscriptions", err);
+    }
+}
+
+function renderSharedUsers(cat) {
+    const ul = document.getElementById('sharedUsersList');
+    if (!ul) return;
+    ul.innerHTML = '';
+    const current = allLists.find(l => l.name === cat);
+    if (!current || !current.expand.participants) return;
+    current.expand.participants.forEach(part => {
+        const email = part.email;
+        const li = ce('li', { className: 'user-list-item' });
+        li.textContent = email;
+        const btn = ce('button', { className: 'remove-user-btn', innerHTML: '&times;' });
+        btn.onclick = async (e) => {
+            e.stopPropagation();
+            if (!confirm('Remove ' + email + ' from @' + cat + '?')) return;
+            try {
+                const { getPb } = await import('./auth.js');
+                const pb = getPb();
+                if (pb && pb.authStore.isValid) {
+                    const currentCat = allLists.find(l => l.name === cat);
+                    if (currentCat) {
+                        await pb.collection('lists').update(currentCat.id, {
+                            participants: currentCat.participants.filter(u => u !== part.id)
+                        });
+                        currentCat.participants = currentCat.participants.filter(u => u !== part.id);
+                        renderSharedUsers(cat);
+                        showToast('Removed ' + email, 'success');
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to remove user", err);
+                showToast("Failed to remove user", "error");
+            }
+        };
+        li.appendChild(btn);
+        ul.appendChild(li);
+    });
+}
 
 // Share/Invite behavior
 (function setupShare() {
@@ -879,8 +1032,8 @@ render();
 
     function openModal() {
         const cat = getActiveListName();
-        title.textContent = 'Invite to @' + cat;
-        desc.textContent = 'Enter email addresses to invite to this list. You will implement sending later.';
+        title.textContent = 'Share @' + cat;
+        desc.textContent = 'Enter email addresses that you want to share this category with.';
         emails.value = '';
         err.style.display = 'none';
         backdrop.classList.add('show');
@@ -898,20 +1051,41 @@ render();
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return Array.from(new Set(parts.filter(p => re.test(p.toLowerCase()))));
     }
-    function saveInvites(cat, list) {
-        const KEY = 'invites-v1';
-        const raw = localStorage.getItem(KEY);
-        const data = raw ? JSON.parse(raw) : {};
-        const prev = Array.isArray(data[cat]) ? data[cat] : [];
-        const merged = Array.from(new Set([...prev, ...list]));
-        data[cat] = merged;
-        localStorage.setItem(KEY, JSON.stringify(data));
+    async function saveInvites(cat, list) {
+        try {
+            const { getPb, getUser } = await import('./auth.js');
+            const pb = getPb();
+            const currentUser = pb.authStore.record.id;
+            if (!pb || !pb.authStore.isValid || !currentUser) {
+                showToast("Not logged in", "error");
+                return;
+            }
+            let currentCat = allLists.find(l => l.name === cat);
+            for (const email of list) {
+                try {
+                    await pb.collection('invites').create({
+                        from: currentUser,
+                        list: currentCat.id,
+                        to: email
+                    });
+                    return true
+                } catch (err) {
+                    console.error("Failed to save invite", err);
+                    showToast("User " + email + " already invited", "error");
+                }
+            }
+        } catch (err) {
+            console.error("Error saving invites", err);
+            showToast("Error saving invites", "error");
+        }
+        return false;
     }
 
     shareBtn.addEventListener('click', () => {
         const cat = getActiveListName();
         if (!cat || cat === 'Default') { showToast('Select a category to share.', 'error'); return; }
         openModal();
+        renderSharedUsers(cat);
     });
     actionsBtn && actionsBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleActions(); });
     actComplete && actComplete.addEventListener('click', async () => {
@@ -948,7 +1122,7 @@ render();
         const kept = tasks.filter(t => !t.done);
         const toDelete = tasks.filter(t => t.done);
         listsState.lists[name] = kept;
-        await save(); 
+        await save();
         try {
             const { getPb } = await import('./auth.js');
             const pb = getPb();
@@ -984,13 +1158,14 @@ render();
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeModal(); closeActions(); } });
     document.addEventListener('click', () => closeActions());
     cancelBtn.addEventListener('click', closeModal);
-    sendBtn.addEventListener('click', () => {
+    sendBtn.addEventListener('click', async () => {
         const list = parseEmails(emails.value);
         if (!list.length) { err.style.display = 'block'; emails.focus(); return; }
         const cat = getActiveListName();
-        saveInvites(cat, list);
+        const shared = await saveInvites(cat, list);
         closeModal();
-        showToast('Invites prepared for @' + cat + ': ' + list.join(', '), 'info');
+        if (shared)
+            showToast('Invites prepared for @' + cat + ': ' + list.join(', '), 'info');
     });
     // initial visibility
     shareBtn.style.display = (appMode === 'tasks' && getActiveListName() !== 'Default') ? '' : 'none';
@@ -1099,6 +1274,7 @@ function tryDeleteTag(tag) {
     }
     render();
 }
+
 // Simple toast implementation
 function showToast(message, type = 'info') {
     let toast = document.createElement('div');

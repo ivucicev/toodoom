@@ -1,0 +1,69 @@
+<div class="chips">
+    @if(notesCategories().length > 0) {
+    <div class="row" id="catsRow">
+        @for(cat of notesCategories(); track cat.id) {
+        <span (click)="toggleCategory(cat.name)" class="chip"
+            title="Filter by @{{cat.name}}"><span>&#64;{{cat.name}}</span>
+            @if (selectedCategory == cat.name) {
+            <span class="x">×</span>
+            }
+            <span (click)="$event.stopPropagation(); deleteCategory(cat.id, cat.name)" class="del" title="Delete"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                    <path d="M10 11v6"></path>
+                    <path d="M14 11v6"></path>
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </span>
+        </span>
+        }
+    </div>
+    }
+    @if (notes()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tags.length > 0) {
+    <div class="row" id="tagsRow">
+        @for(tag of notes()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tags; track tag) {
+        <span class="chip" title="Filter by #{{tag}}" (click)="toggleTag(tag)">
+            <span>#{{ tag }}</span>
+            @if (selectedTag == tag) {
+            <span class="x">×</span>
+            }
+        </span>
+        }
+    </div>
+    }
+</div>
+<div class="list notes-grid" id="list">
+    <article class="note-card note-new">
+        <form (submit)="upsertNote()">
+            <textarea [(ngModel)]="text" name="text" class="note-input" autofocus=""
+                placeholder="Add a note (supports #tags and @category, or use /task or /note)" rows="3"
+                (keyup.enter)="upsertNote()"></textarea>
+        </form>
+    </article>
+    @for(note of notes()[selectedCategory == '' ? 'default' : selectedCategory]?.notes; track note) {
+    @if(selectedTag == '' || note.tags.includes(selectedTag)) {
+    @if (editNoteId == note.id) {
+    <article class="note-card note-new" [style.background]="note.color">
+        <form (submit)="upsertNote(note)">
+            <textarea [(ngModel)]="editText" name="text" class="note-input" autofocus=""
+                placeholder="Add a note (supports #tags and @category, or use /task or /note)" rows="3"
+                (keyup.enter)="upsertNote(note)"></textarea>
+        </form>
+    </article>
+    } @else {
+    <article class="note-card" (click)="editNote(note)" [style.background]="note.color">
+        <p class="text" [innerHTML]="note.text"></p>
+        <span class="pin" title="Pin/Unpin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l6 6-6 6-6-6z"></path>
+            </svg>
+        </span>
+        <span (click)="deleteNote(note)" class="del" title="Delete">×</span>
+    </article>
+    }
+    }
+    }
+</div>
