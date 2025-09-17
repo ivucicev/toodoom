@@ -1,7 +1,7 @@
 {
-  "name": "Kaboo",
-  "short_name": "Kaboo",
-  "description": "Tasks with tags and categories, offline-first.",
+  "name": "Toodoom",
+  "short_name": "Toodoom",
+  "description": "Simple tasks, get shit done.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

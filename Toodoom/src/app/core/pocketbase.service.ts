@@ -92,8 +92,8 @@ export class PocketbaseService {
 		}
 	}
 
-	async deleteTask(id: string) {
-		if (window.confirm("Are you sure you want to delete this task?"))
+	async deleteTask(id: string, prompt = true) {
+		if (!prompt || window.confirm("Are you sure you want to delete this task?"))
 			await this.pb.collection('tasks').delete(id);
 	}
 
@@ -102,8 +102,27 @@ export class PocketbaseService {
 			await this.pb.collection('notes').delete(id);
 	}
 
+	async removeSharedInvite(id: string) {
+		if (window.confirm("Are you sure you want to remove this invite?"))
+			await this.pb.collection('invites').delete(id);
+	}
+
+	async removeParticipant(list: IList, userId: string) {
+		if (!window.confirm(`Are you sure you want to remove this user from @${list.name}?`)) return;
+		const participants = list.participants.filter((f: any) => f.id != userId);
+		await this.pb.collection('lists').update(list.id, { participants });
+	}
+
 	async createList(newList: IList): Promise<IList> {
 		return await this.pb.collection('lists').create(newList);
+	}
+
+	async getList(name: string): Promise<IList> {
+		return await this.pb.collection('lists').getFirstListItem(`name = "${name}"`, { expand: 'participants' });
+	}
+
+	async getNoteList(name: string): Promise<INoteList> {
+		return await this.pb.collection('note_lists').getFirstListItem(`name = "${name}"`);
 	}
 
 	async createNoteList(newList: INoteList): Promise<INoteList> {
@@ -113,6 +132,31 @@ export class PocketbaseService {
 	async deleteList(id: string) {
 		if (window.confirm("Are you sure you want to delete this list? This will also move all notes associated with it to uncategorized."))
 			await this.pb.collection('lists').delete(id);
+	}
+
+	async toggleTaskCompletion(id: string, done: boolean) {
+		return await this.pb.collection('tasks').update(id, { done });
+	}
+
+	async getSharedInvites(listId: string) {
+		return await this.pb.collection('invites').getList(1, 50, { filter: `list = "${listId}"` });
+	}
+
+	async invite(emails: string[], listId: string) {
+		for (const email of emails) {
+			try {
+				await this.pb.collection('invites').create({
+					from: this.currentUser.id,
+					list: listId,
+					to: email
+				});
+				return true
+			} catch (err) {
+				this.toast.showToast("User " + email + " already invited", "error");
+				return false;
+			}
+		}
+		return true;
 	}
 
 	softGradient(seed: number) {

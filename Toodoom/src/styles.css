@@ -596,6 +596,11 @@ header h1 {
     border-radius: 50%;
     background: rgba(0, 0, 0, .06);
     color: currentColor;
+    cursor: pointer;
+}
+
+.del {
+    cursor: pointer;
 }
 
 .note-card .pin {
@@ -948,5 +953,6 @@ header h1 {
 
 .chips {
     padding-left: 16px;
+    padding-top: 8px;
     padding-right: 16px;
 }

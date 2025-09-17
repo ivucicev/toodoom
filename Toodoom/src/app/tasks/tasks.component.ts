@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ITask, PocketbaseService } from '../core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
+import { JsonPipe } from '@angular/common';
 
 @Component({
 	selector: 'app-tasks',
@@ -18,7 +19,7 @@ export class TasksComponent {
 	public editDesc = '';
 
 	public tasks: any = signal({ default: { tasks: [], tags: [] } });
-	public taskCategories = signal<{ id: string, name: string }[]>([]);
+	public taskCategories = signal<{ id: string, name: string, participants: string[] }[]>([]);
 
 	public selectedCategory = '';
 	public selectedTag?: string = '';
@@ -34,12 +35,12 @@ export class TasksComponent {
 
 		const tasks: any = await this.pb.getTasks();
 
-		const categoriesMap = new Map<string, { id: string, name: string }>();
+		const categoriesMap = new Map<string, { id: string, name: string, participants: [] }>();
 
 		for (const task of tasks) {
 			const list = task.expand?.list;
 			if (list && !categoriesMap.has(list.id)) {
-				categoriesMap.set(list.id, { id: list.id, name: list.name });
+				categoriesMap.set(list.id, { id: list.id, name: list.name, participants: list?.expand?.participants  });
 			}
 		}
 
@@ -83,25 +84,39 @@ export class TasksComponent {
 	async upsertTask(editTask?: ITask | null) {
 
 		if (this.title.trim() === '' && this.editTitle === '') return;
-		
+
 		const catMatch = editTask ? this.editTitle.match(/@(\w+)/) : this.title.match(/@(\w+)/);
 		const categoryMatch = catMatch ? catMatch[1] : '';
 
-		let category = this.taskCategories().find(cat => (cat.name == categoryMatch) 
-		|| (categoryMatch == '' && cat.name == this.selectedCategory));
+		let category = this.taskCategories().find(cat => (cat.name == categoryMatch)
+			|| (categoryMatch == '' && cat.name == this.selectedCategory));
 
 		if (!category && categoryMatch) {
-			const list = await this.pb.createList({
-				id: '',
-				name: categoryMatch,
-				owner: this.pb.currentUser.id,
-				sort_order: 0,
-				grad_seed: Math.random(),
-				participants: []
-			});
 
-			this.taskCategories.set([...this.taskCategories(), { id: list.id, name: list.name }]);
-			category = { id: list.id, name: list.name };
+			let categoryFromDB = null;
+
+			try {
+				categoryFromDB = await this.pb.getList(categoryMatch);
+			} catch (error) {
+				
+			}
+
+			if (!categoryFromDB) {
+				const list = await this.pb.createList({
+					id: '',
+					name: categoryMatch,
+					owner: this.pb.currentUser.id,
+					sort_order: 0,
+					grad_seed: Math.random(),
+					participants: []
+				});
+	
+				this.taskCategories.set([...this.taskCategories(), { id: list.id, name: list.name, participants: [] }]);
+				category = { id: list.id, name: list.name, participants: [] };
+			} else {
+				this.taskCategories.set([...this.taskCategories(), { id: categoryFromDB.id, name: categoryFromDB.name, participants: categoryFromDB.participants as any }]);
+				category = categoryFromDB;
+			}
 
 		}
 
@@ -184,7 +199,7 @@ export class TasksComponent {
 
 	async toggleTask(task: ITask) {
 		task.done = !task.done;
-		await this.pb.upsertTask(task);
+		await this.pb.toggleTaskCompletion(task.id, task.done);
 	}
 
 	async toggleTag(tag: string) {
@@ -208,6 +223,23 @@ export class TasksComponent {
 			event.preventDefault();
 			this.upsertTask(task ?? undefined);
 		}
+	}
+
+	async completeAll() {
+		this.tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory].tasks.forEach(async (task: ITask) => {
+			if (!task.done) task.done = true;
+			await this.pb.toggleTaskCompletion(task.id, true);
+		});
+	}
+
+	async deleteCompletedTasks() {
+		if (!window.confirm("Are you sure you want to delete all completed tasks?")) return;
+		this.tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory].tasks.forEach(async (task: ITask, i: number) => {
+			if (!task.done) return;
+			await this.pb.deleteTask(task.id, false);
+		});
+		await this.getTasks();
+		this.selectedCategory = '';
 	}
 
 }

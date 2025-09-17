@@ -78,19 +78,34 @@ export class NotesComponent {
 		const catMatch = editNote ? this.editText.match(/@(\w+)/) : this.text.match(/@(\w+)/);
 		const categoryMatch = catMatch ? catMatch[1] : '';
 
-		let category = this.notesCategories().find(cat => (cat.name == categoryMatch) 
-		|| (categoryMatch == '' && cat.name == this.selectedCategory));
+		let category = this.notesCategories().find(cat => (cat.name == categoryMatch)
+			|| (categoryMatch == '' && cat.name == this.selectedCategory));
 
 		if (!category && categoryMatch) {
-			const list = await this.pb.createNoteList({
-				id: '',
-				name: categoryMatch,
-				owner: this.pb.currentUser.id,
-				sort_order: 0,
-			});
 
-			this.notesCategories.set([...this.notesCategories(), { id: list.id, name: list.name }]);
-			category = { id: list.id, name: list.name };
+			let categoryFromDB: any = null;
+			try {
+				
+				categoryFromDB = await this.pb.getNoteList(categoryMatch);
+			} catch (error) {
+				
+			}
+
+			if (!categoryFromDB) {
+
+				const list = await this.pb.createNoteList({
+					id: '',
+					name: categoryMatch,
+					owner: this.pb.currentUser.id,
+					sort_order: 0,
+				});
+
+				this.notesCategories.set([...this.notesCategories(), { id: list.id, name: list.name }]);
+				category = { id: list.id, name: list.name };
+			} else {
+				this.notesCategories.set([...this.notesCategories(), { id: categoryFromDB.id, name: categoryFromDB.name }]);
+				category = categoryFromDB;
+			}
 
 		}
 
