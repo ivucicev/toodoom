@@ -57,6 +57,12 @@ export class AppComponent {
 			localStorage.setItem('app-mode', this.appMode);
 		}
 		this.router.navigateByUrl(this.appMode === 'tasks' ? '/tasks' : '/notes');
+
+	}
+
+	changeMetaTheme() {
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		metaThemeColor?.setAttribute('content', this.isDark ? '#0f1216' : '#f6f8fb');
 	}
 
 	toggleAppMode() {
@@ -99,6 +105,7 @@ export class AppComponent {
 			html.setAttribute('data-theme', 'dark');
 			localStorage.setItem('theme', 'dark');
 		}
+		this.changeMetaTheme()
 	}
 
 	setTheme() {
@@ -108,6 +115,9 @@ export class AppComponent {
 			this.isDark = true;
 			html.setAttribute('data-theme', 'dark');
 		}
+
+		this.changeMetaTheme()
+
 	}
 
 	async login() {

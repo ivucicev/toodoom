@@ -129,7 +129,7 @@
         @if(task.expand?.list?.name) {
         <div class="tags">&#64;{{task.expand.list.name}}</div>
         }
-        @if (task.expand?.list && task.expand?.list?.expand?.participants.length > 0) {
+        @if (task.expand?.list && task.expand?.list?.expand?.participants?.length > 0) {
         <span class="tags" style="float: right;">👤 {{ task.expand.user.email.split('@')[0] }}</span>
         }
     </article>
