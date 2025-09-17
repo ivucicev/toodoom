@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import PocketBase from 'pocketbase/cjs';
 import { ToastService } from './toast.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
 	providedIn: 'root'
@@ -15,7 +16,7 @@ export class PocketbaseService {
 	public noteCategories = signal<string[]>([]);
 
 	constructor(private toast: ToastService) {
-		this.pb = new PocketBase('http://127.0.0.1:8090/');
+		this.pb = new PocketBase(environment.api);
 	}
 
 	getPb = () => this.pb;
