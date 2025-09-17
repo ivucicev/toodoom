@@ -30,6 +30,9 @@ export class AppComponent {
 	emails = '';
 	username: string = '';
 	sharedInvites: any = [];
+	registerEmail: string = '';
+	registerPassword: string = '';
+	registerPasswordConfirm: string = '';
 
 	constructor(private router: Router, private toast: ToastService, private pb: PocketbaseService) {
 		this.setTheme();
@@ -115,6 +118,13 @@ export class AppComponent {
 		this.password = '';
 		const email = this.pb.currentUser['email'];
 		this.username = email.split('@')[0];
+	}
+
+	async register() {
+		const register = await this.pb.register(this.registerEmail, this.registerPassword, this.registerPasswordConfirm);
+		if (!register) return;
+
+		this.toggleRegisterModal();
 	}
 
 	async logout() {

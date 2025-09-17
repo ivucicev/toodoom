@@ -38,7 +38,7 @@
     </div>
     }
 </div>
-<div class="list" id="list">
+<div class="list tasks-list" id="list">
     <article class="card enter" [style.--c1]="newTaskColor.c1" [style.--c2]="newTaskColor.c2"
         [style.background]="'linear-gradient(135deg,' + newTaskColor.c1 + ', ' + newTaskColor.c2 + ')'">
         <form (ngSubmit)="upsertTask()">

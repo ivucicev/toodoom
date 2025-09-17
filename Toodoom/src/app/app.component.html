@@ -164,19 +164,21 @@
 <div class="modal-backdrop" id="registerBackdrop" aria-hidden="true" (click)="toggleRegisterModal()">
 	<div class="modal" role="dialog" aria-modal="true" aria-labelledby="registerTitle"
 		(click)="$event.stopPropagation()">
-		<div class="mh" id="registerTitle">Register</div>
-		<div class="mc">
-			<label>Email</label>
-			<input type="email" id="registerEmail" placeholder="you@example.com" />
-			<label>Password</label>
-			<input type="password" id="registerPassword" placeholder="Enter password" />
-			<label>Confirm Password</label>
-			<input type="password" id="registerPasswordConfirm" placeholder="Confirm password" />
-			<button class="btn primary" id="registerSubmit">Register</button>
-		</div>
-		<div class="mf">
-			<button class="btn" id="registerCancel" (click)="toggleRegisterModal()">Cancel</button>
-		</div>
+		<form (submit)="register()">
+			<div class="mh" id="registerTitle">Register</div>
+			<div class="mc">
+				<label>Email</label>
+				<input [(ngModel)]="registerEmail" name="registerEmail" type="email" id="registerEmail" placeholder="you@example.com" />
+				<label>Password</label>
+				<input [(ngModel)]="registerPassword" name="registerPassword" type="password" id="registerPassword" placeholder="Enter password" />
+				<label>Confirm Password</label>
+				<input [(ngModel)]="registerPasswordConfirm" name="registerPasswordConfirm" type="password" id="registerPasswordConfirm" placeholder="Confirm password" />
+				<button class="btn primary" id="registerSubmit">Register</button>
+			</div>
+			<div class="mf">
+				<button class="btn" id="registerCancel" (click)="register()">Cancel</button>
+			</div>
+		</form>
 	</div>
 </div>
 }
