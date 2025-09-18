@@ -81,6 +81,7 @@ export class PocketbaseService {
 
 	constructor(private toast: ToastService) {
 		this.pb = new PocketBase(environment.api);
+		this.pb.autoCancellation(false);
 		this.syncCurrentUser();
 		if (this.hasSession()) {
 			this.syncOfflineDataToServer().catch(err => console.error('Failed to sync offline data on init', err));
@@ -324,6 +325,7 @@ export class PocketbaseService {
 			});
 			return Promise.resolve(tasks);
 		}
+		await this.checkInvites();
 		return await this.pb.collection('tasks').getFullList({ sort: 'position,-created', expand: 'user,list,list.participants,list.owner' });
 	}
 
@@ -593,6 +595,14 @@ export class PocketbaseService {
 			}
 		}
 		return true;
+	}
+
+	async checkInvites() {
+		await this.pb.send('api/check-invites', { method: 'GET' });
+	}
+
+	async organize(listId: string) {
+		await this.pb.send(`api/organize-list/${listId}`, { method: 'GET' });
 	}
 
 	softGradient(seed: number) {

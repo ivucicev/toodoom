@@ -135,6 +135,8 @@ export class AppComponent {
 		if (!register) return;
 
 		this.toggleRegisterModal();
+
+		this.toast.showToast('Registration was successful.');
 	}
 
 	async logout() {

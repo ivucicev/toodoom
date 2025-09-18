@@ -956,3 +956,7 @@ header h1 {
     padding-top: 8px;
     padding-right: 16px;
 }
+
+.tags-container {
+    padding-bottom: 10px;
+}

@@ -29,6 +29,8 @@ export class TasksComponent {
 	constructor(private pb: PocketbaseService) {
 		this.newTaskColor = this.pb.softGradient(Math.random());
 		this.getTasks();
+
+		this.initSubscription();
 	}
 
 	private async getTasks() {
@@ -40,7 +42,7 @@ export class TasksComponent {
 		for (const task of tasks) {
 			const list = task.expand?.list;
 			if (list && !categoriesMap.has(list.id)) {
-				categoriesMap.set(list.id, { id: list.id, name: list.name, participants: list?.expand?.participants  });
+				categoriesMap.set(list.id, { id: list.id, name: list.name, participants: list?.expand?.participants });
 			}
 		}
 
@@ -63,6 +65,13 @@ export class TasksComponent {
 		// Remove duplicate tags for each category
 		for (const key in categorizedTasks) {
 			categorizedTasks[key].tags = Array.from(new Set(categorizedTasks[key].tags));
+		}
+
+		for (const key in categorizedTasks) {
+			categorizedTasks[key].tasks.sort((a: ITask, b: ITask) => {
+				if (a.done === b.done) return 0;
+				return a.done ? 1 : -1;
+			});
 		}
 
 		this.tasks.set(categorizedTasks);
@@ -98,7 +107,7 @@ export class TasksComponent {
 			try {
 				categoryFromDB = await this.pb.getList(categoryMatch);
 			} catch (error) {
-				
+
 			}
 
 			if (!categoryFromDB) {
@@ -110,7 +119,7 @@ export class TasksComponent {
 					grad_seed: Math.random(),
 					participants: []
 				});
-	
+
 				this.taskCategories.set([...this.taskCategories(), { id: list.id, name: list.name, participants: [] }]);
 				category = { id: list.id, name: list.name, participants: [] };
 			} else {
@@ -195,9 +204,12 @@ export class TasksComponent {
 			allTasks[key].tasks = allTasks[key].tasks.filter((t: ITask) => t.id !== id);
 		}
 		this.tasks.set(allTasks);
+
 	}
 
-	async toggleTask(task: ITask) {
+	async toggleTask(e: Event, task: ITask) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
 		task.done = !task.done;
 		await this.pb.toggleTaskCompletion(task.id, task.done);
 	}
@@ -240,6 +252,25 @@ export class TasksComponent {
 		});
 		await this.getTasks();
 		this.selectedCategory = '';
+	}
+
+	async initSubscription() {
+		if (!this.pb.currentUser?.id) return;
+		this.pb.getPb().collection('tasks').subscribe('*', async (e: any) => {
+			await this.getTasks();
+		})
+
+	}
+
+	async organize() {
+		let category = this.taskCategories().find(cat => (cat.name == this.selectedCategory));
+		if (!category) return;
+		await this.pb.organize(category.id);
+		await this.getTasks();
+	}
+
+	ngOnDestroy() {
+		this.pb.getPb().collection('tasks').unsubscribe('*')
 	}
 
 }
