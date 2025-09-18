@@ -313,8 +313,19 @@ header h1 {
     padding-top: 16px;
     padding-bottom: 25px;
     padding-right: 16px;
-    max-height: calc(100vh - 153px);
+    max-height: calc(100vh - 140px);
     overflow-y: auto;
+}
+
+/* If #catsRow exists, adjust .list max-height */
+#catsRow ~ .list,
+#catsRow + .list {
+    max-height: calc(100vh - 100px);
+}
+
+#tagsRow ~ .list,
+#tagsRow + .list {
+    max-height: calc(100vh - 100px);
 }
 
 /* Notes grid layout */
