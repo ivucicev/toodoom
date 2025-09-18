@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for toodoom on 2025-09-18T14:47:20+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'toodoom'
+primary_region = 'fra'
+
+[build]
+  dockerfile = 'docker/dockerfile'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
+
+[mounts]
+  destination = "/pb/pb_data"
+  source = "pb_data"

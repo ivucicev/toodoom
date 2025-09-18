@@ -1,0 +1,47 @@
+# flyctl launch added from Toodoom/.gitignore
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+Toodoom/dist
+Toodoom/tmp
+Toodoom/out-tsc
+Toodoom/bazel-out
+
+# Node
+Toodoom/node_modules
+Toodoom/**/npm-debug.log
+Toodoom/**/yarn-error.log
+
+# IDEs and editors
+Toodoom/**/.idea
+Toodoom/**/.project
+Toodoom/**/.classpath
+Toodoom/**/.c9
+Toodoom/**/*.launch
+Toodoom/**/.settings
+Toodoom/**/*.sublime-workspace
+
+# Visual Studio Code
+Toodoom/**/.vscode/*
+!Toodoom/**/.vscode/settings.json
+!Toodoom/**/.vscode/tasks.json
+!Toodoom/**/.vscode/launch.json
+!Toodoom/**/.vscode/extensions.json
+Toodoom/**/.history/*
+
+# Miscellaneous
+Toodoom/.angular/cache
+Toodoom/**/.sass-cache
+Toodoom/connect.lock
+Toodoom/coverage
+Toodoom/libpeerconnection.log
+Toodoom/**/testem.log
+Toodoom/typings
+
+# System files
+Toodoom/**/.DS_Store
+Toodoom/**/Thumbs.db
+
+# flyctl launch added from Toodoom-server/.gitignore
+Toodoom-server/pb_data
+fly.toml

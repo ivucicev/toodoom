@@ -110,8 +110,8 @@
         </form>
     </article>
     } @else {
-    <article (click)="!task.done && editTask(task)" (dblclick)="toggleTask($event, task)" class="card enter" [class.done]="task.done"
-        [class.solving]="!task.done" [class.solving]="task.done" [style.--c1]="task?.grad?.c1"
+    <article (click)="!task.done && editTask(task)" (dblclick)="toggleTask($event, task)" class="card enter"
+        [class.done]="task.done" [class.solving]="!task.done" [class.solving]="task.done" [style.--c1]="task?.grad?.c1"
         [style.--c2]="task?.grad?.c2"
         [style.background]="'linear-gradient(135deg,' + task?.grad?.c1 + ', ' + task?.grad?.c2 + ')'"
         style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
@@ -122,6 +122,7 @@
             </div>
         </div>
         <p class="desc">{{ task.desc }}</p>
+        @if (task.expand?.list?.name || task.tags.length || task.expand?.list?.expand?.participants?.length) {
         <div class="tags-container">
             @if(task.expand?.list?.name) {
             <span class="tags">&#64;{{task.expand.list.name}}</span>
@@ -133,6 +134,7 @@
             <span class="tags" style="float: right;">👤 {{ task.expand.user.email.split('@')[0] }}</span>
             }
         </div>
+        }
     </article>
     }
     }

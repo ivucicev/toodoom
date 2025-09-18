@@ -249,7 +249,11 @@
 						@for(participant of category.participants; track participant) {
 						<li class="user-list-item">
 							{{participant.email}}
-							<span (click)="removeInvite(participant)" title="Delete" class="del">×</span>
+							@if (participant.id == currentUserId) {
+								<small class="cursor-pointer" (click)="removeInvite(participant)">Leave</small>
+							} @else {
+								<span (click)="removeInvite(participant)" title="Delete" class="del">×</span>
+							}
 						</li>
 						}
 						}

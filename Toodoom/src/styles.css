@@ -960,3 +960,7 @@ header h1 {
 .tags-container {
     padding-bottom: 10px;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}
