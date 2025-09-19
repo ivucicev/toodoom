@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    api: 'http://toodoom.eenvo.io:8080/_/',
+    api: 'http://toodoom.vercel.app/',
     serviceWorker: true
 };
