@@ -224,6 +224,10 @@ export class TasksComponent {
 		this.editDesc = '';
 	}
 
+	async refreshData() {
+		await this.getTasks();
+	}
+
 	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, task?: ITask | null) {
 		if (mention.consumeSelection()) {
 			return;

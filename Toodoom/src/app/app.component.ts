@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from './core/toast.service';
 import { JsonPipe } from '@angular/common';
+import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 
 @Component({
 	selector: 'app-root',
@@ -11,7 +12,7 @@ import { JsonPipe } from '@angular/common';
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
 	title = 'Toodoom';
 
@@ -34,12 +35,25 @@ export class AppComponent {
 	registerPassword: string = '';
 	registerPasswordConfirm: string = '';
 	currentUserId = '';
+	lastInactiveMs = 0;
 
-	constructor(private router: Router, private toast: ToastService, private pb: PocketbaseService) {
+	constructor(private zone: NgZone, private router: Router, private toast: ToastService, private pb: PocketbaseService) {
 		this.setTheme();
 		this.authCheck();
-		this.init()
+		this.init();
 	}
+
+	readonly active$ = merge(
+		fromEvent(document, 'visibilitychange').pipe(
+			map(() => document.visibilityState === 'visible')
+		),
+		fromEvent(window, 'focus').pipe(map(() => true)),
+		fromEvent(window, 'blur').pipe(map(() => false)),
+		fromEvent(window as any, 'pageshow').pipe(map(() => true))
+	).pipe(
+		distinctUntilChanged(),
+		shareReplay({ bufferSize: 1, refCount: true })
+	);
 
 	async authCheck() {
 		await this.pb.refreshAuth();
@@ -157,6 +171,17 @@ export class AppComponent {
 	async deleteCompletedTasks() {
 		await this.currentComponent?.deleteCompletedTasks()
 		this.actionsModalOpen = false;
+	}
+
+	ngOnInit() {
+		let hiddenAt = 0;
+		this.zone.runOutsideAngular(() => {
+			document.addEventListener('visibilitychange', () => {
+				if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+				else this.lastInactiveMs = hiddenAt ? Date.now() - hiddenAt : 0;
+				this.currentComponent?.refreshData();
+			});
+		});
 	}
 
 	async invite() {

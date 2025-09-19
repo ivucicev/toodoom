@@ -181,6 +181,10 @@ export class NotesComponent {
 		this.selectedTag = this.selectedTag === tag ? '' : tag;
 	}
 
+	async refreshData() {
+		await this.getNotes();
+	}
+
 	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, note?: INote) {
 		if (mention.consumeSelection()) {
 			return;
