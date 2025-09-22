@@ -1,6 +1,6 @@
 # Toodoom
 
-Toodoom began as a weekend idea after noticing that every simple tasks app had turned into a dashboard for teams. We just wanted a gentle place where my wife and I could share an `@shopping` list, keep track of `@household` fixes, and scribble personal notes. The result is a shareable, offline-first desk that feels like a calm gradient garden. Switch between notes and tasks, drop in `#tags`, assign `@categories`, and keep life admin tidy without corporate bloat. Try the hosted demo at [toodoom.vercel.app](https://toodoom.vercel.app/).
+Toodoom began as a weekend idea after noticing that every simple tasks app had turned into a dashboard for teams. We just wanted a gentle place where my wife and I could share an `@shopping` list, keep track of `@household` fixes, and scribble personal notes. The result is a shareable, offline-first desk that feels like a calm gradient garden. My wife and I use it every day now. Switch between notes and tasks, drop in `#tags`, assign `@categories`, and keep life admin tidy without corporate bloat. Try the hosted demo at [toodoom.vercel.app](https://toodoom.vercel.app/).
 
 ![Cover](screenshots/all.png)
 
