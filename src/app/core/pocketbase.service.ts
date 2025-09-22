@@ -22,6 +22,7 @@ export interface IList {
 	id: string;
 	name: string;
 	owner: string;
+	color?: string;
 	sort_order: number;
 	grad_seed: number;
 	participants: string[];
