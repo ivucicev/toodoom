@@ -107,6 +107,8 @@ docker compose up --build
 
 Visit `http://localhost:4200` and log in (or register) to begin.
 
+> Default PocketBase super admin credentials are `admin@admin.com` / `admin123`. Update them before deploying by editing the `PB_ADMIN_EMAIL` and `PB_ADMIN_PASSWORD` values in `docker-compose.yml`, or adjust the `ENV` block in `docker/dockerfile.api` if you are building the container directly.
+
 ## Configuration
 
 Environment configuration lives in `src/environments/`.
@@ -157,6 +159,8 @@ docker compose up --build
 ```
 
 The command above builds both containers, serves the Angular app on `http://localhost:4200`, and exposes PocketBase on `http://127.0.0.1:8090`. PocketBase state persists in `server/pb_data`, so feel free to stop and restart the stack without losing records.
+
+- **Admin credentials** – the Docker images create a super admin with `admin@admin.com` / `admin123` by default. Change these credentials by updating the `PB_ADMIN_EMAIL` and `PB_ADMIN_PASSWORD` environment variables in `docker-compose.yml`, or edit the `ENV` values inside `docker/dockerfile.api` when building a standalone image.
 
 ## Available scripts
 
