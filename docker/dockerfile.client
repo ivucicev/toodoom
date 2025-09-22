@@ -1,18 +1,14 @@
-# Build the Angular frontend
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install dependencies first to leverage Docker layer caching
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy the remaining project files and build the production bundle
 COPY angular.json tsconfig*.json ngsw-config.json ./
 COPY public ./public
 COPY src ./src
-RUN npm run build
+RUN npm run build-hosted
 
-# Stage 2: serve the compiled app with nginx
 FROM nginx:alpine
 COPY --from=build /app/dist/toodoom/browser /usr/share/nginx/html
 EXPOSE 80
