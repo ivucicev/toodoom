@@ -10,9 +10,20 @@ ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/po
 RUN unzip /tmp/pocketbase.zip -d /pb \
     && rm /tmp/pocketbase.zip
 
+ENV PB_ADMIN_EMAIL=admin@admin.com \
+    PB_ADMIN_PASSWORD=admin123
+
 COPY server/pb_migrations /pb/pb_migrations
 COPY server/pb_hooks /pb/pb_hooks
 
 WORKDIR /pb
+
+RUN printf '%s\n' \
+    '#!/bin/sh' \
+    './pocketbase superuser create "$PB_ADMIN_EMAIL" "$PB_ADMIN_PASSWORD" || true' \
+    'exec ./pocketbase serve --http=0.0.0.0:8090' \
+    > /pb/init.sh && chmod +x /pb/init.sh
+
 EXPOSE 8090
-CMD ["./pocketbase", "serve", "--http=0.0.0.0:8090"]
+
+ENTRYPOINT ["/bin/sh", "-c", "/pb/init.sh"]

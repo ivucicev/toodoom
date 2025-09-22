@@ -14,6 +14,9 @@ services:
             dockerfile: docker/dockerfile.api
             args:
                 PB_VERSION: "0.30.0"
+        environment:
+            PB_ADMIN_EMAIL: "admin@admin.com"
+            PB_ADMIN_PASSWORD: "admin123"
         ports:
             - "8090:8090"
         volumes:
