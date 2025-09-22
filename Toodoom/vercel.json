@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://toodoom.eenvo.io:8080/api/:path*"
-    }
-  ]
-}

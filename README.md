@@ -1,0 +1,159 @@
+# Toodoom
+
+Toodoom began as a weekend idea after noticing that every “productivity” app had turned into a dashboard for teams. We just wanted a gentle place where my wife and I could share an `@shopping` list, keep track of `@household` fixes, and scribble personal notes. The result is a shareable, offline-first desk that feels like a calm gradient garden. Switch between notes and tasks, drop in `#tags`, assign `@categories`, and keep life admin tidy without corporate bloat. Try the hosted demo at [toodoom.vercel.app](https://toodoom.vercel.app/).
+
+![Cover](screenshots/all.png)
+
+## Highlights
+
+- ✨ **Dual brain** – maintain boards of tasks _and_ sticky notes in the same app.
+- 🏷️ **Smart metadata** – apply `#tags` for instant filtering and `@categories` for lightweight project buckets.
+- 🤝 **Shareable lists** – invite a partner, housemate, or family member to any `@category` and stay in sync together (PocketBase-backed).
+- 🌙 **Light & dark** – polished themes that automatically remember your preference.
+- 📱 **PWA-ready** – install Toodoom on desktop or mobile and run it like a native app.
+- 🚂 **Offline-first** – capture tasks and notes without a connection; everything syncs to the server the moment you log in.
+- 🧩 **PocketBase inside** – simple auth, realtime updates, and an easy path to self-hosting.
+- 🐳 **Self-host friendly** – Docker Compose template coming soon so you can launch the full stack in one go.
+
+## Table of contents
+
+- [Highlights](#highlights)
+- [Architecture](#architecture)
+- [Quick start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Install](#install)
+  - [Run the app](#run-the-app)
+- [Configuration](#configuration)
+- [Offline workflow](#offline-workflow)
+- [Progressive Web App](#progressive-web-app)
+- [Self hosting](#self-hosting)
+  - [Docker Compose](#docker-compose)
+- [Available scripts](#available-scripts)
+- [Project status & roadmap](#project-status--roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Architecture
+
+Toodoom is an Angular 19 application backed by [PocketBase](https://pocketbase.io/).
+
+```
+┌────────────────────┐      ┌──────────────────────────┐
+│  Angular frontend  │◄────►│  PocketBase (API + auth) │
+│  • Tasks & notes   │  ws  │  • Users & lists         │
+│  • PWA shell       │ http │  • Sharing, invites      │
+│  • Offline store   │      │  • File storage          │
+└────────────────────┘      └──────────────────────────┘
+```
+
+- Local data is cached in `localStorage` while offline.
+- Once you authenticate, cached tasks/notes/categories are pushed to PocketBase automatically.
+- The UI is entirely client rendered and uses Angular Signals for reactive state.
+
+## Quick start
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+- Angular CLI 19 (`npm install -g @angular/cli`)
+- A running PocketBase instance (local binary or Docker). The default config expects the API to be reachable at `http://127.0.0.1:8090`.
+
+### Install
+
+```bash
+npm install
+```
+
+### Run the app
+
+In one terminal window, start PocketBase (example using its binary):
+
+```bash
+./pocketbase serve
+```
+
+In another terminal, start the Angular dev server:
+
+```bash
+npm start
+```
+
+Visit `http://localhost:4200` and log in (or register) to begin.
+
+## Configuration
+
+Environment configuration lives in `src/environments/`.
+
+| File | Purpose |
+| ---- | ------- |
+| `environment.ts` | Default development settings. |
+| `environment.prod.ts` | Production build overrides. |
+
+The only required variable today is the PocketBase API endpoint:
+
+```ts
+export const environment = {
+  production: false,
+  api: 'http://127.0.0.1:8090'
+};
+```
+
+Adjust these values before building for production.
+
+## Offline workflow
+
+1. Create notes and tasks while offline — Toodoom stores everything locally.
+2. When a network connection or user session becomes available, local content is synced back to PocketBase automatically (lists, note lists, tasks, and notes).
+3. The local cache is cleared after a successful sync, ensuring you never double-import data.
+
+## Progressive Web App
+
+Toodoom ships with Angular Service Worker support. Install it like any modern PWA:
+
+- Open the app in Chrome, Edge, or Safari.
+- Click “Install” (desktop) or “Add to Home Screen” (mobile).
+- Enjoy the same gradient goodness offline.
+
+You can adjust caching behaviour in `ngsw-config.json`.
+
+## Self hosting
+
+PocketBase makes it straightforward to self-host the backend. Deploy the Angular frontend through Vercel, Netlify, static hosting, or your own server.
+
+### Docker Compose
+
+A first-class Docker Compose stack is planned so you can launch PocketBase + Toodoom with a single command. Keep an eye on `/docker-compose.yml` (coming soon) for the official template.
+
+## Available scripts
+
+| Command | Description |
+| ------- | ----------- |
+| `npm start` | Run the dev server with live reload. |
+| `npm run build` | Create a production build inside `dist/`. |
+| `npm run watch` | Rebuild on file changes (development configuration). |
+| `npm test` | Execute unit tests via Karma/Jasmine. |
+
+## Project status & roadmap
+
+- [x] Notes and tasks with gradients, tags, and categories
+- [x] Category sharing via PocketBase invites
+- [x] Offline cache + auto-sync on login
+- [x] Dark/light theme toggle
+- [x] PWA install support
+- [ ] Docker Compose deployment bundle
+- [ ] Mobile-first layout polish
+- [ ] Rich text notes & reminders
+
+## Contributing
+
+Issues, fixes, and improvements are warmly welcomed. Please:
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feat/amazing-idea`.
+3. Commit with context.
+4. Open a pull request describing the change.
+
+## License
+
+This project is released under the MIT License. See `LICENSE` for details.
