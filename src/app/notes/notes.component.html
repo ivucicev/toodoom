@@ -4,6 +4,11 @@
         @for(cat of notesCategories(); track cat.id) {
         <span (click)="toggleCategory(cat.name)" class="chip" [class.active]="selectedCategory == cat.name"
             title="Filter by @{{cat.name}}">
+            @if (selectedCategory == cat.name) {
+            <span class="flex">
+                <input (click)="$event.stopImmediatePropagation()" [(ngModel)]="cat.color" (change)="colorChange($event, cat)" class="color-dot" type="color" />
+            </span>
+            }
             <span>
                 &#64;{{cat.name}} <span class="count">{{ notes()[cat.name]?.notes.length }}</span>
             </span>

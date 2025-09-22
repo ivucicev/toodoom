@@ -544,6 +544,48 @@ export class PocketbaseService {
 		return await this.pb.collection('note_lists').create(newList);
 	}
 
+	async updateNoteList(list: INoteList): Promise<INoteList> {
+		if (!this.hasSession()) {
+			const data = this.getOfflineData();
+			const now = new Date().toISOString();
+			const idx = data.noteLists.findIndex(list => list.id === list.id);
+			if (idx !== -1) {
+				const updatedList: INoteList = {
+					...data.noteLists[idx],
+					...list,
+					updated: now
+				};
+				data.noteLists[idx] = updatedList;
+				this.saveOfflineData(data);
+				return Promise.resolve({ ...updatedList });
+			} else {
+				return Promise.reject('Note list not found');
+			}
+		}
+		return await this.pb.collection('note_lists').update(list.id, list);
+	}
+
+	async updateList(list: IList): Promise<IList> {
+		if (!this.hasSession()) {
+			const data = this.getOfflineData();
+			const now = new Date().toISOString();
+			const idx = data.lists.findIndex(list => list.id === list.id);
+			if (idx !== -1) {
+				const updatedList: IList = {
+					...data.lists[idx],
+					...list,
+					updated: now
+				};
+				data.lists[idx] = updatedList;
+				this.saveOfflineData(data);
+				return Promise.resolve({ ...updatedList });
+			} else {
+				return Promise.reject('List not found');
+			}
+		}
+		return await this.pb.collection('lists').update(list.id, list);
+	}
+
 	async deleteList(id: string) {
 		if (!window.confirm("Are you sure you want to delete this list? This will also move all notes associated with it to uncategorized.")) return;
 		if (!this.hasSession()) {

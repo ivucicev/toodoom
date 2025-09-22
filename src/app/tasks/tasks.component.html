@@ -3,7 +3,12 @@
     <div class="row" id="catsRow">
         @for(cat of taskCategories(); track cat.id) {
         <span (click)="toggleCategory(cat.name)" class="chip" [class.active]="selectedCategory == cat.name"
-            title="Filter by @{{cat.name}}"><span>
+            title="Filter by @{{cat.name}}">
+            <span class="flex">
+                <input (click)="$event.stopImmediatePropagation()" [(ngModel)]="cat.color"
+                    (change)="colorChange($event, cat)" class="color-dot" type="color" />
+            </span>
+            <span>
                 &#64;{{cat.name}}&nbsp;<span class="count">{{ tasks()[cat.name]?.tasks.length }}</span>
             </span>
             @if (selectedCategory == cat.name) {
@@ -113,7 +118,7 @@
     <article (click)="!task.done && editTask(task)" (dblclick)="toggleTask($event, task)" class="card enter"
         [class.done]="task.done" [class.solving]="!task.done" [class.solving]="task.done" [style.--c1]="task?.grad?.c1"
         [style.--c2]="task?.grad?.c2"
-        [style.background]="'linear-gradient(135deg,' + task?.grad?.c1 + ', ' + task?.grad?.c2 + ')'"
+        
         style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
         <div class="rowx">
             <h2 class="title">{{ task.title }}</h2>

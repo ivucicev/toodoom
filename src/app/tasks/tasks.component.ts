@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { ITask, PocketbaseService } from '../core/pocketbase.service';
+import { IList, ITask, PocketbaseService } from '../core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 import { JsonPipe } from '@angular/common';
@@ -19,7 +19,7 @@ export class TasksComponent {
 	public editDesc = '';
 
 	public tasks: any = signal({ default: { tasks: [], tags: [] } });
-	public taskCategories = signal<{ id: string, name: string, participants: string[] }[]>([]);
+	public taskCategories = signal<{ id: string, name: string, color?: string, participants: string[] }[]>([]);
 
 	public selectedCategory = '';
 	public selectedTag?: string = '';
@@ -37,12 +37,12 @@ export class TasksComponent {
 
 		const tasks: any = await this.pb.getTasks();
 
-		const categoriesMap = new Map<string, { id: string, name: string, participants: [] }>();
+		const categoriesMap = new Map<string, { id: string, color: string, name: string, participants: [] }>();
 
 		for (const task of tasks) {
 			const list = task.expand?.list;
 			if (list && !categoriesMap.has(list.id)) {
-				categoriesMap.set(list.id, { id: list.id, name: list.name, participants: list?.expand?.participants });
+				categoriesMap.set(list.id, { id: list.id, name: list.name, color: list.color, participants: list?.expand?.participants });
 			}
 		}
 
@@ -120,10 +120,10 @@ export class TasksComponent {
 					participants: []
 				});
 
-				this.taskCategories.set([...this.taskCategories(), { id: list.id, name: list.name, participants: [] }]);
+				this.taskCategories.set([...this.taskCategories(), { id: list.id, color: list.color, name: list.name, participants: [] }]);
 				category = { id: list.id, name: list.name, participants: [] };
 			} else {
-				this.taskCategories.set([...this.taskCategories(), { id: categoryFromDB.id, name: categoryFromDB.name, participants: categoryFromDB.participants as any }]);
+				this.taskCategories.set([...this.taskCategories(), { id: categoryFromDB.id, color: categoryFromDB.color, name: categoryFromDB.name, participants: categoryFromDB.participants as any }]);
 				category = categoryFromDB;
 			}
 
@@ -271,6 +271,10 @@ export class TasksComponent {
 		if (!category) return;
 		await this.pb.organize(category.id);
 		await this.getTasks();
+	}
+
+	async colorChange(color: any, category: { id: string, name: string }) {
+		await this.pb.updateList(category as IList);
 	}
 
 	ngOnDestroy() {

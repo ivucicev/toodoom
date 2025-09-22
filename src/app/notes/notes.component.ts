@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { INote, PocketbaseService } from '../core/pocketbase.service';
+import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 
 @Component({
@@ -12,7 +12,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 export class NotesComponent {
 
 	notes: any = signal({ default: { notes: [], tags: [] } });
-	notesCategories = signal<{ id: string, name: string }[]>([]);
+	notesCategories = signal<{ id: string, name: string, color?: string }[]>([]);
 	selectedCategory: string = '';
 	selectedTag: string = '';
 	text: string = '';
@@ -27,12 +27,12 @@ export class NotesComponent {
 	async getNotes() {
 		const notes: any = await this.pb.getNotes();
 
-		const categoriesMap = new Map<string, { id: string, name: string }>();
+		const categoriesMap = new Map<string, { id: string, name: string, color: string }>();
 
 		for (const note of notes) {
 			const list = note.expand?.list;
 			if (list && !categoriesMap.has(list.id)) {
-				categoriesMap.set(list.id, { id: list.id, name: list.name });
+				categoriesMap.set(list.id, { id: list.id, name: list.name, color: list.color });
 			}
 		}
 
@@ -100,10 +100,10 @@ export class NotesComponent {
 					sort_order: 0,
 				});
 
-				this.notesCategories.set([...this.notesCategories(), { id: list.id, name: list.name }]);
-				category = { id: list.id, name: list.name };
+				this.notesCategories.set([...this.notesCategories(), { id: list.id, name: list.name, color: list.color }]);
+				category = { id: list.id, name: list.name, color: list.color };
 			} else {
-				this.notesCategories.set([...this.notesCategories(), { id: categoryFromDB.id, name: categoryFromDB.name }]);
+				this.notesCategories.set([...this.notesCategories(), { id: categoryFromDB.id, color: categoryFromDB.colorChange, name: categoryFromDB.name }]);
 				category = categoryFromDB;
 			}
 
@@ -183,6 +183,10 @@ export class NotesComponent {
 
 	async refreshData() {
 		await this.getNotes();
+	}
+
+	async colorChange(color: any, category: { id: string, name: string }) {
+		await this.pb.updateNoteList(category as INoteList);
 	}
 
 	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, note?: INote) {

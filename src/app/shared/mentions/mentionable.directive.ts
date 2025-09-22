@@ -213,12 +213,14 @@ export class MentionableDirective implements OnChanges {
         if (trigger === '@') {
             return this.mentionCategories
                 .filter(cat => cat.name.toLowerCase().includes(normalized))
+                .slice(0, 2)
                 .map(cat => ({ id: cat.id, label: cat.name, value: cat.name, type: 'category' }));
         }
 
         const unique = Array.from(new Set(this.mentionTags));
         return unique
             .filter(tag => tag.toLowerCase().includes(normalized))
+            .slice(0, 2)
             .map(tag => ({ label: tag, value: tag, type: 'tag' }));
     }
 

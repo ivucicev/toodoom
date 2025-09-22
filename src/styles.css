@@ -225,9 +225,8 @@ header h1 {
     border-radius: 6px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     list-style: none;
-    max-height: 180px;
-    overflow-y: auto;
-    z-index: 100;
+    overflow-y: visible;
+    z-index: 10000;
 }
 
 [data-theme="dark"] .mention-list {
@@ -310,10 +309,10 @@ header h1 {
     display: grid;
     gap: 0;
     padding-left: 16px;
-    padding-top: 16px;
+    padding-top: 4px;
     padding-bottom: 25px;
     padding-right: 16px;
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 145px);
     overflow-y: auto;
 }
 
@@ -965,7 +964,7 @@ header h1 {
 .chips {
     padding-left: 16px;
     padding-top: 8px;
-    padding-right: 16px;
+    padding-bottom: 4px;
 }
 
 .tags-container {
@@ -974,4 +973,29 @@ header h1 {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.color-dot {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.color-dot::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-dot::-webkit-color-swatch {
+    border: none;
+    border-radius: 0;
+    /* stays square */
+}
+
+.flex {
+    display: flex;
 }

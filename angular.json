@@ -55,7 +55,7 @@
 							"serviceWorker": "ngsw-config.json"
 						},
 						"hosted": {
-							"optimization": false,
+							"optimization": true,
 							"extractLicenses": false,
 							"sourceMap": true,
 							"fileReplacements": [
@@ -64,9 +64,20 @@
 									"with": "src/environments/environment.hosted.ts"
 								}
 							]
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true,
+							"fileReplacements": [
+								{
+									"replace": "src/environments/environment.ts",
+									"with": "src/environments/environment.development.ts"
+								}
+							]
 						}
 					},
-					"defaultConfiguration": "production"
+					"defaultConfiguration": "development"
 				},
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
@@ -75,10 +86,10 @@
 							"buildTarget": "Toodoom:build:production"
 						},
 						"hosted": {
-							"buildTarget": "Toodoom:build:production"
+							"buildTarget": "Toodoom:build:hosted"
 						},
 						"development": {
-							"buildTarget": "Toodoom:build"
+							"buildTarget": "Toodoom:build:development"
 						}
 					},
 					"defaultConfiguration": "development"
