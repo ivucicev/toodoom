@@ -13,12 +13,13 @@ Toodoom began as a weekend idea after noticing that every “productivity” app
 - 📱 **PWA-ready** – install Toodoom on desktop or mobile and run it like a native app.
 - 🚂 **Offline-first** – capture tasks and notes without a connection; everything syncs to the server the moment you log in.
 - 🧩 **PocketBase inside** – simple auth, realtime updates, and an easy path to self-hosting.
-- 🐳 **Self-host friendly** – Docker Compose template coming soon so you can launch the full stack in one go.
+- 🐳 **Self-host friendly** – Docker Compose setup included so you can launch the full stack in one go.
 
 ## Table of contents
 
 - [Highlights](#highlights)
 - [Architecture](#architecture)
+- [Repository layout](#repository-layout)
 - [Quick start](#quick-start)
   - [Prerequisites](#prerequisites)
   - [Install](#install)
@@ -50,6 +51,24 @@ Toodoom is an Angular 19 application backed by [PocketBase](https://pocketbase.i
 - Once you authenticate, cached tasks/notes/categories are pushed to PocketBase automatically.
 - The UI is entirely client rendered and uses Angular Signals for reactive state.
 
+## Repository layout
+
+```
+.
+|- src/                   # Angular application source
+|- public/                # Static assets bundled with the client
+|- dist/                  # Production build output (generated)
+|- server/                # PocketBase binary, data, hooks, and migrations
+|  |- pb_data/
+|  |- pb_hooks/
+|  |- pb_migrations/
+|  `- pocketbase         # Download the PocketBase binary here for local runs
+|- docker/                # Dockerfiles for the frontend and API
+|  |- dockerfile.client
+|  `- dockerfile.api
+`- docker-compose.yml     # Docker Compose stack for full local environment
+```
+
 ## Quick start
 
 ### Prerequisites
@@ -57,7 +76,7 @@ Toodoom is an Angular 19 application backed by [PocketBase](https://pocketbase.i
 - Node.js 20+
 - npm 10+
 - Angular CLI 19 (`npm install -g @angular/cli`)
-- A running PocketBase instance (local binary or Docker). The default config expects the API to be reachable at `http://127.0.0.1:8090`.
+- PocketBase 0.30+ — download the binary into `server/pocketbase` so you can run it locally. The default config expects the API to be reachable at `http://127.0.0.1:8090`.
 
 ### Install
 
@@ -67,16 +86,23 @@ npm install
 
 ### Run the app
 
-In one terminal window, start PocketBase (example using its binary):
+In one terminal window, start PocketBase from the `server/` folder:
 
 ```bash
+cd server
 ./pocketbase serve
 ```
 
-In another terminal, start the Angular dev server:
+In another terminal (at the project root), start the Angular dev server:
 
 ```bash
 npm start
+```
+
+Or run the entire stack with Docker (builds the images in `docker/`):
+
+```bash
+docker compose up --build
 ```
 
 Visit `http://localhost:4200` and log in (or register) to begin.
@@ -123,7 +149,13 @@ PocketBase makes it straightforward to self-host the backend. Deploy the Angular
 
 ### Docker Compose
 
-A first-class Docker Compose stack is planned so you can launch PocketBase + Toodoom with a single command. Keep an eye on `/docker-compose.yml` (coming soon) for the official template.
+A ready-to-run stack lives in `docker-compose.yml` and references the Dockerfiles in `docker/`.
+
+```bash
+docker compose up --build
+```
+
+The command above builds both containers, serves the Angular app on `http://localhost:4200`, and exposes PocketBase on `http://127.0.0.1:8090`. PocketBase state persists in `server/pb_data`, so feel free to stop and restart the stack without losing records.
 
 ## Available scripts
 
@@ -141,9 +173,7 @@ A first-class Docker Compose stack is planned so you can launch PocketBase + Too
 - [x] Offline cache + auto-sync on login
 - [x] Dark/light theme toggle
 - [x] PWA install support
-- [ ] Docker Compose deployment bundle
-- [ ] Mobile-first layout polish
-- [ ] Rich text notes & reminders
+- [x] Docker Compose deployment bundle
 
 ## Contributing
 

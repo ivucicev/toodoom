@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/dockerfile.client
+    ports:
+      - "4200:80"
+    depends_on:
+      - pocketbase
+
+  pocketbase:
+    build:
+      context: .
+      dockerfile: docker/dockerfile.api
+      args:
+        PB_VERSION: "0.30.0"
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./server/pb_data:/pb/pb_data
+      - ./server/pb_migrations:/pb/pb_migrations:ro
+      - ./server/pb_hooks:/pb/pb_hooks:ro
