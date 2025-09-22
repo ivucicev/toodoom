@@ -10,7 +10,6 @@ ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/po
 RUN unzip /tmp/pocketbase.zip -d /pb \
     && rm /tmp/pocketbase.zip
 
-# Copy project migrations and hooks into the image
 COPY server/pb_migrations /pb/pb_migrations
 COPY server/pb_hooks /pb/pb_hooks
 
