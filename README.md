@@ -1,6 +1,6 @@
 # Toodoom
 
-Toodoom began as a weekend idea after noticing that every “productivity” app had turned into a dashboard for teams. We just wanted a gentle place where my wife and I could share an `@shopping` list, keep track of `@household` fixes, and scribble personal notes. The result is a shareable, offline-first desk that feels like a calm gradient garden. Switch between notes and tasks, drop in `#tags`, assign `@categories`, and keep life admin tidy without corporate bloat. Try the hosted demo at [toodoom.vercel.app](https://toodoom.vercel.app/).
+Toodoom began as a weekend idea after noticing that every simple tasks app had turned into a dashboard for teams. We just wanted a gentle place where my wife and I could share an `@shopping` list, keep track of `@household` fixes, and scribble personal notes. The result is a shareable, offline-first desk that feels like a calm gradient garden. Switch between notes and tasks, drop in `#tags`, assign `@categories`, and keep life admin tidy without corporate bloat. Try the hosted demo at [toodoom.vercel.app](https://toodoom.vercel.app/).
 
 ![Cover](screenshots/all.png)
 
@@ -115,6 +115,7 @@ Environment configuration lives in `src/environments/`.
 | ---- | ------- |
 | `environment.ts` | Default development settings. |
 | `environment.prod.ts` | Production build overrides. |
+| `environment.hosted.ts` | Production build for self-hosted instances. |
 
 The only required variable today is the PocketBase API endpoint:
 
@@ -162,7 +163,9 @@ The command above builds both containers, serves the Angular app on `http://loca
 | Command | Description |
 | ------- | ----------- |
 | `npm start` | Run the dev server with live reload. |
-| `npm run build` | Create a production build inside `dist/`. |
+| `npm run build` | Create build inside `dist/`. |
+| `npm run build-prod` | Create a production build inside `dist/`. |
+| `npm run build-hosted` | Create a production build for self hosted inside `dist/`. |
 | `npm run watch` | Rebuild on file changes (development configuration). |
 | `npm test` | Execute unit tests via Karma/Jasmine. |
 
