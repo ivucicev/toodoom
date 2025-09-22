@@ -78,7 +78,7 @@
 							"buildTarget": "Toodoom:build:production"
 						},
 						"development": {
-							"buildTarget": "Toodoom:build:development"
+							"buildTarget": "Toodoom:build"
 						}
 					},
 					"defaultConfiguration": "development"
