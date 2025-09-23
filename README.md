@@ -4,6 +4,8 @@ Toodoom began as a weekend idea after noticing that every simple tasks app had t
 
 ![Cover](screenshots/all.png)
 
+<a href="https://buymeacoffee.com/ivucicev"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" width="160"></a>
+
 ## Highlights
 
 - ✨ **Dual brain** – maintain boards of tasks _and_ sticky notes in the same app.

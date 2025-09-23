@@ -2,3 +2,8 @@ node_modules
 .angular
 dist
 server/pocketbase
+.DS_Store
+**/*/.DS_Store
+public/icons/.DS_Store
+public/.DS_Store
+.DS_Store
