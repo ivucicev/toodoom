@@ -183,6 +183,9 @@ The command above builds both containers, serves the Angular app on `http://loca
 - [x] Dark/light theme toggle
 - [x] PWA install support
 - [x] Docker Compose deployment bundle
+- [ ] SqlLite, IndexDB instead of localstorage for offline data
+- [ ] Rich text for notes (will reduce simplicity)
+- [ ] Electron build so it can run on macOS and Windows
 
 ## Contributing
 
