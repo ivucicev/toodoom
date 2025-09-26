@@ -94,7 +94,11 @@ export class TasksComponent {
 
 		if (this.title.trim() === '' && this.editTitle === '') return;
 
-		const catMatch = editTask ? this.editTitle.match(/@(\w+)/) : this.title.match(/@(\w+)/);
+		const STRIP_TAG_OR_MENTION = /[#@][\p{L}\p{N}_]+/gu;
+		const HASH_TAG_CAPTURE = /#([\p{L}\p{N}_]+)/gu;
+		const CAT_TAG_CAPTURE = /@([\p{L}\p{N}_]+)/u;
+
+		const catMatch = editTask ? this.editTitle.match(CAT_TAG_CAPTURE) : this.title.match(CAT_TAG_CAPTURE);
 		const categoryMatch = catMatch ? catMatch[1] : '';
 
 		let category = this.taskCategories().find(cat => (cat.name == categoryMatch)
@@ -130,26 +134,30 @@ export class TasksComponent {
 		}
 
 		let task = editTask;;
+
 		if (task && editTask) {
-			task.title = this.editTitle.replace(/#\w+/g, '').replace(/@\w+/, '').trim();
+			const newTags = [...this.editTitle.matchAll(HASH_TAG_CAPTURE)].map(m => m[1]);
+
+			task.title = this.editTitle.replace(STRIP_TAG_OR_MENTION, '').trim();
 			task.desc = this.editDesc;
 			task.list = category?.id;
-			const newTags = [...this.editTitle.matchAll(/#(\w+)/g)].map(m => m[1]);
 			task.tags = Array.from(new Set([...(editTask.tags || []), ...newTags]));
 		} else {
 			const seed = Math.random();
+			const tags = [...this.title.matchAll(HASH_TAG_CAPTURE)].map(m => m[1]);
+
 			task = {
 				id: '',
-				title: this.title.replace(/#\w+/g, '').replace(/@\w+/, '').trim(),
+				title: this.title.replace(STRIP_TAG_OR_MENTION, '').trim(),
 				desc: this.desc,
 				list: category?.id,
 				done: false,
-				tags: [...this.title.matchAll(/#(\w+)/g)].map(m => m[1]),
+				tags,
 				position: 0,
 				grad_seed: seed,
 				grad: this.pb.softGradient(seed),
 				user: this.pb.currentUser.id
-			}
+			};
 		}
 
 		const savedTask = await this.pb.upsertTask(task as ITask);

@@ -75,7 +75,11 @@ export class NotesComponent {
 
 		if (this.text.trim() === '' && this.editText === '') return;
 
-		const catMatch = editNote ? this.editText.match(/@(\w+)/) : this.text.match(/@(\w+)/);
+		const STRIP_TAG_OR_MENTION = /[#@][\p{L}\p{N}_]+/gu;
+		const HASH_TAG_CAPTURE = /#([\p{L}\p{N}_]+)/gu;
+		const CAT_TAG_CAPTURE = /@([\p{L}\p{N}_]+)/u;
+
+		const catMatch = editNote ? this.editText.match(CAT_TAG_CAPTURE) : this.text.match(CAT_TAG_CAPTURE);
 		const categoryMatch = catMatch ? catMatch[1] : '';
 
 		let category = this.notesCategories().find(cat => (cat.name == categoryMatch)
@@ -111,17 +115,17 @@ export class NotesComponent {
 
 		let note = editNote;;
 		if (note && editNote) {
-			note.text = this.editText.replace(/#\w+/g, '').replace(/@\w+/, '').trim();
+			note.text = this.editText.replace(STRIP_TAG_OR_MENTION, '').replace(STRIP_TAG_OR_MENTION, '').trim();
 			note.list = category?.id;
-			const newTags = [...this.editText.matchAll(/#(\w+)/g)].map(m => m[1]);
+			const newTags = [...this.editText.matchAll(HASH_TAG_CAPTURE)].map(m => m[1]);
 			note.tags = Array.from(new Set([...(editNote.tags || []), ...newTags]));
 		} else {
 			const grad = this.pb.softGradient(Math.random())
 			note = {
 				id: '',
-				text: this.text.replace(/#\w+/g, '').replace(/@\w+/, '').trim(),
+				text: this.text.replace(STRIP_TAG_OR_MENTION, '').replace(STRIP_TAG_OR_MENTION, '').trim(),
 				list: category?.id,
-				tags: [...this.text.matchAll(/#(\w+)/g)].map(m => m[1]),
+				tags: [...this.text.matchAll(HASH_TAG_CAPTURE)].map(m => m[1]),
 				position: 0,
 				pinned: false,
 				archived: false,
