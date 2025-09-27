@@ -1,8 +1,68 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://toodoom.eenvo.io:8080/api/:path*"
-    }
-  ]
+	"headers": [
+		{
+			"source": "/ngsw.json",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "no-store"
+				}
+			]
+		},
+		{
+			"source": "/ngsw-worker.js",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "no-store"
+				}
+			]
+		},
+		{
+			"source": "/index.html",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "no-store"
+				}
+			]
+		},
+		{
+			"source": "/manifest.webmanifest",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "no-store"
+				}
+			]
+		},
+		{
+			"source": "/(.*)\\.(js|css)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=31536000, immutable"
+				}
+			]
+		},
+		{
+			"source": "/assets/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=31536000, immutable"
+				}
+			]
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/api/:path*",
+			"destination": "http://toodoom.eenvo.io:8080/api/:path*"
+		},
+		{
+			"source": "/((?!ngsw\\.json|ngsw-worker\\.js|safety-worker\\.js|assets|.*\\..*).*)",
+			"destination": "/index.html"
+		}
+	]
 }

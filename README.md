@@ -186,6 +186,7 @@ The command above builds both containers, serves the Angular app on `http://loca
 - [ ] SqlLite, IndexDB instead of localstorage for offline data
 - [ ] Rich text for notes (will reduce simplicity)
 - [ ] Electron build so it can run on macOS and Windows
+- [ ] Notepad tab - to scrible longer notes
 
 ## Contributing
 

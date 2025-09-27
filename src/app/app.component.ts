@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ToastService } from './core/toast.service';
 import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
 	selector: 'app-root',
@@ -37,7 +38,11 @@ export class AppComponent implements OnInit {
 	currentUserId = '';
 	lastInactiveMs = 0;
 
-	constructor(private zone: NgZone, private router: Router, private toast: ToastService, private pb: PocketbaseService) {
+	constructor(private zone: NgZone, private updates: SwUpdate, private router: Router, private toast: ToastService, private pb: PocketbaseService) {
+		this.updates.versionUpdates.subscribe((e) => {
+			if (e.type === 'VERSION_READY') location.reload();
+		});
+		this.updates.checkForUpdate();
 		this.setTheme();
 		this.authCheck();
 		this.init();
@@ -145,6 +150,7 @@ export class AppComponent implements OnInit {
 		const email = this.pb.currentUser['email'];
 		this.username = email.split('@')[0];
 		this.currentUserId = this.pb.currentUser.id;
+		this.currentComponent?.refreshData();
 	}
 
 	async register() {
@@ -161,6 +167,7 @@ export class AppComponent implements OnInit {
 		this.isLoggedIn = false;
 		this.username = '';
 		this.accountMenuOpen = false;
+		this.currentComponent?.refreshData();
 	}
 
 	async completeAllTasks() {
