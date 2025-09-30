@@ -57,11 +57,21 @@ export interface INoteList {
 	updated?: string | Date;
 }
 
+export interface INotepad {
+	id: string;
+	title: string;
+	content: string;
+	user: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
 type OfflineStoreData = {
 	tasks: ITask[];
 	notes: INote[];
 	lists: IList[];
 	noteLists: INoteList[];
+	notepads: INotepad[];
 };
 
 @Injectable({
@@ -106,7 +116,7 @@ export class PocketbaseService {
 	}
 
 	private defaultOfflineData(): OfflineStoreData {
-		return { tasks: [], notes: [], lists: [], noteLists: [] };
+		return { tasks: [], notes: [], lists: [], noteLists: [], notepads: [] };
 	}
 
 	private getOfflineData(): OfflineStoreData {
@@ -130,7 +140,8 @@ export class PocketbaseService {
 				tasks: Array.isArray(parsed?.tasks) ? parsed!.tasks : [],
 				notes: Array.isArray(parsed?.notes) ? parsed!.notes : [],
 				lists: Array.isArray(parsed?.lists) ? parsed!.lists : [],
-				noteLists: Array.isArray(parsed?.noteLists) ? parsed!.noteLists : []
+				noteLists: Array.isArray(parsed?.noteLists) ? parsed!.noteLists : [],
+				notepads: Array.isArray(parsed?.notepads) ? parsed!.notepads : []
 			};
 		} catch (error) {
 			console.warn('Failed to parse offline cache, resetting', error);
@@ -145,7 +156,8 @@ export class PocketbaseService {
 			tasks: [...data.tasks],
 			notes: [...data.notes],
 			lists: [...data.lists],
-			noteLists: [...data.noteLists]
+			noteLists: [...data.noteLists],
+			notepads: [...data.notepads]
 		};
 		if (this.canUseStorage()) {
 			window.localStorage.setItem(this.offlineStorageKey, JSON.stringify(snapshot));
@@ -161,7 +173,7 @@ export class PocketbaseService {
 	}
 
 	private hasOfflineRecords(data: OfflineStoreData) {
-		return data.tasks.length > 0 || data.notes.length > 0 || data.lists.length > 0 || data.noteLists.length > 0;
+		return data.tasks.length > 0 || data.notes.length > 0 || data.lists.length > 0 || data.noteLists.length > 0 || data.notepads.length > 0;
 	}
 
 	private generateId(prefix: string): string {
@@ -190,6 +202,10 @@ export class PocketbaseService {
 			base.expand = { list: { ...list } };
 		}
 		return base;
+	}
+
+	private decorateNotepadForReturn(notepad: INotepad) {
+		return { ...notepad };
 	}
 
 	private async syncOfflineDataToServer() {
@@ -254,6 +270,14 @@ export class PocketbaseService {
 					archived: note.archived ?? false,
 					color: note.color,
 					grad_seed: typeof note.grad_seed === 'number' ? note.grad_seed : Math.random(),
+					user: this.currentUser?.id || this.offlineUser.id
+				});
+			}
+
+			for (const notepad of data.notepads) {
+				await this.pb.collection('notepads').create({
+					title: notepad.title,
+					content: notepad.content ?? '',
 					user: this.currentUser?.id || this.offlineUser.id
 				});
 			}
@@ -344,6 +368,20 @@ export class PocketbaseService {
 		return await this.pb.collection('notes').getFullList({ sort: '-created', expand: 'list,list.owner' });
 	}
 
+	async getNotepads(): Promise<INotepad[]> {
+		if (!this.hasSession()) {
+			const data = this.getOfflineData();
+			const notepads = data.notepads.map(notepad => this.decorateNotepadForReturn(notepad));
+			notepads.sort((a: any, b: any) => {
+				const aUpdated = a.updated ? new Date(a.updated).getTime() : 0;
+				const bUpdated = b.updated ? new Date(b.updated).getTime() : 0;
+				return bUpdated - aUpdated;
+			});
+			return Promise.resolve(notepads);
+		}
+		return await this.pb.collection('notepads').getFullList({ sort: '-updated,-created' });
+	}
+
 	async deleteCategory(id: string) {
 		if (window.confirm("Are you sure you want to delete this category? This will move all tasks associated with it to uncategorized."))
 			if (!this.hasSession()) {
@@ -430,6 +468,35 @@ export class PocketbaseService {
 		}
 	}
 
+	async upsertNotepad(notepad: INotepad): Promise<INotepad> {
+		if (!this.hasSession()) {
+			const data = this.getOfflineData();
+			const now = new Date().toISOString();
+			const { user, ...rest } = notepad as any;
+			const candidate: INotepad = {
+				...rest,
+				id: rest.id && rest.id !== '' ? rest.id : this.generateId('notepad'),
+				title: rest.title ?? '',
+				content: rest.content ?? '',
+				user: user ?? this.currentUser?.id ?? this.offlineUser.id,
+				created: rest.created ?? now,
+				updated: now
+			};
+			const index = data.notepads.findIndex(n => n.id === candidate.id);
+			if (index !== -1) {
+				data.notepads[index] = { ...candidate };
+			} else {
+				data.notepads.push({ ...candidate });
+			}
+			this.saveOfflineData(data);
+			return Promise.resolve(this.decorateNotepadForReturn(candidate));
+		}
+		if (notepad.id && notepad.id !== '') {
+			return await this.pb.collection('notepads').update(notepad.id, notepad);
+		}
+		return await this.pb.collection('notepads').create(notepad);
+	}
+
 	async deleteTask(id: string, prompt = true) {
 		if (!prompt || window.confirm("Are you sure you want to delete this task?"))
 			if (!this.hasSession()) {
@@ -451,6 +518,17 @@ export class PocketbaseService {
 			} else {
 				await this.pb.collection('notes').delete(id);
 			}
+	}
+
+	async deleteNotepad(id: string) {
+		if (!window.confirm('Are you sure you want to delete this notepad?')) return null;
+		if (!this.hasSession()) {
+			const data = this.getOfflineData();
+			data.notepads = data.notepads.filter(notepad => notepad.id !== id);
+			this.saveOfflineData(data);
+			return null;
+		}
+		return await this.pb.collection('notepads').delete(id);
 	}
 
 	async removeSharedInvite(id: string) {

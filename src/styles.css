@@ -999,3 +999,21 @@ header h1 {
 .flex {
     display: flex;
 }
+
+[data-theme="dark"] .editor {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    background: var(--bg) !important;
+}
+
+[data-theme="dark"] .editor textarea {
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    background: var(--bg) !important;
+}
+
+[data-theme="dark"] .tab.active {
+    background: var(--bg) !important;
+	opacity: 1;
+	border-bottom: 0;
+}

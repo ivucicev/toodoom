@@ -1,0 +1,45 @@
+<div class="notepad-container">
+	<div class="tab-bar">
+		<div class="tabs" role="tablist">
+			<button type="button" class="tab add-tab" (click)="createNotepad()" title="New notepad"
+				aria-label="New notepad">
+				<span class="label">+</span>
+			</button>
+			@if (notepads.length) {
+			@for (pad of notepads; track pad.id) {
+			<button type="button" role="tab" class="tab" [class.active]="pad.id === selectedNotepadId"
+				(click)="selectNotepad(pad.id)">
+				@if (editingTabId === pad.id) {
+				<input class="label-input" [id]="tabInputId(pad.id)" type="text" [ngModel]="tabTitleDraft"
+					(ngModelChange)="onTabTitleDraftChanged($event)" maxlength="50" (click)="$event.stopPropagation()"
+					(keydown)="handleTabTitleKey($event, pad)" (blur)="commitTabTitleEdit(pad)" spellcheck="false" />
+				} @else {
+				<span class="label" (dblclick)="startTabTitleEdit(pad, $event)" title="Double-click to rename">
+					{{ getTabTitle(pad) }}
+				</span>
+				}
+				<span class="close" title="Delete" (click)="deleteNotepad(pad, $event)">×</span>
+			</button>
+			}
+			} @else {
+			<span class="empty"> &nbsp; No notepads yet. Use + to create one.</span>
+			}
+		</div>
+	</div>
+
+	@if (selectedNotepadId) {
+	<div class="editor" role="tabpanel">
+		<textarea class="content-input" [(ngModel)]="contentDraft" name="contentDraft" placeholder="Start writing..."
+			(ngModelChange)="onContentInput($event)"></textarea>
+		<div class="status">
+			@if (isSaving) {
+			<span>Saving…</span>
+			} @else {
+			<span class="saved">Saved</span>
+			}
+		</div>
+	</div>
+	} @else {
+	<div class="empty-state">Create a notepad to begin.</div>
+	}
+</div>

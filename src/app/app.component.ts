@@ -7,6 +7,8 @@ import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
 
+type AppMode = 'tasks' | 'notes' | 'notepad';
+
 @Component({
 	selector: 'app-root',
 	imports: [RouterOutlet, FormsModule],
@@ -17,7 +19,7 @@ export class AppComponent implements OnInit {
 
 	title = 'Toodoom';
 
-	appMode: 'tasks' | 'notes' = 'tasks';
+	appMode: AppMode = 'tasks';
 	email = '';
 	password = '';
 
@@ -37,6 +39,13 @@ export class AppComponent implements OnInit {
 	registerPasswordConfirm: string = '';
 	currentUserId = '';
 	lastInactiveMs = 0;
+
+	readonly appModes: AppMode[] = ['tasks', 'notes', 'notepad'];
+	readonly modeLabels: Record<AppMode, string> = {
+		tasks: 'Tasks',
+		notes: 'Notes',
+		notepad: 'Notepad'
+	};
 
 	constructor(private zone: NgZone, private updates: SwUpdate, private router: Router, private toast: ToastService, private pb: PocketbaseService) {
 		this.updates.versionUpdates.subscribe((e) => {
@@ -70,14 +79,14 @@ export class AppComponent implements OnInit {
 	}
 
 	init() {
-		const appMode = localStorage.getItem('app-mode');
-		if (appMode === 'tasks' || appMode === 'notes') {
-			this.appMode = appMode;
+		const stored = localStorage.getItem('app-mode');
+		if (stored && this.appModes.includes(stored as AppMode)) {
+			this.appMode = stored as AppMode;
 		} else {
 			this.appMode = 'tasks';
 			localStorage.setItem('app-mode', this.appMode);
 		}
-		this.router.navigateByUrl(this.appMode === 'tasks' ? '/tasks' : '/notes');
+		this.router.navigateByUrl(`/${this.appMode}`);
 
 	}
 
@@ -86,10 +95,10 @@ export class AppComponent implements OnInit {
 		metaThemeColor?.setAttribute('content', this.isDark ? '#0f1216' : '#f6f8fb');
 	}
 
-	toggleAppMode() {
-		this.appMode = this.appMode === 'tasks' ? 'notes' : 'tasks';
-		localStorage.setItem('app-mode', this.appMode);
-		this.router.navigateByUrl(this.appMode === 'tasks' ? '/tasks' : '/notes');
+	setAppMode(mode: AppMode) {
+		this.appMode = mode;
+		localStorage.setItem('app-mode', mode);
+		this.router.navigateByUrl(`/${mode}`);
 	}
 
 	toggleActionsModal() {
