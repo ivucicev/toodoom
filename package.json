@@ -8,6 +8,8 @@
 		"build-hosted": "ng build --configuration hosted",
 		"build-prod": "ng build --configuration production",
 		"watch": "ng build --watch --configuration development",
+		"build-docker-server": "docker build -t toodoom-server -f dockerfile .",
+		"run-docker-server": "docker run -d -p 8080:8080   -v /pb_data:/pb/pb_data toodoom-server",
 		"test": "ng test"
 	},
 	"private": true,
