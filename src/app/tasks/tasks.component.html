@@ -1,15 +1,20 @@
 <div class="chips">
     @if(taskCategories().length > 0) {
-    <div class="row" id="catsRow">
-        @for(cat of taskCategories(); track cat.id) {
-        <span (click)="toggleCategory(cat.name)" class="chip" [class.active]="selectedCategory == cat.name"
-            title="Filter by @{{cat.name}}">
-            <span class="flex">
-                <input (click)="$event.stopImmediatePropagation()" [(ngModel)]="cat.color"
+        <div class="row" id="catsRow">
+            @for(cat of taskCategories(); track cat.id) {
+                <span (click)="toggleCategory(cat.name)" class="chip" [class.active]="selectedCategory == cat.name"
+                title="Filter by @{{cat.name}}">
+                <span class="flex">
+                    <input (click)="$event.stopImmediatePropagation()" [(ngModel)]="cat.color"
                     (change)="colorChange($event, cat)" class="color-dot" type="color" />
-            </span>
-            <span>
-                &#64;{{cat.name}}&nbsp;<span class="count">{{ tasks()[cat.name]?.tasks.length }}</span>
+                </span>
+                <span>
+                    &#64;{{cat.name}}&nbsp;
+                    @if (tasks()[cat.name]?.undone) {
+                        <span class="count">
+                            {{ tasks()[cat.name]?.undone }}
+                        </span>
+                    }
             </span>
             @if (selectedCategory == cat.name) {
             <span class="x">×</span>

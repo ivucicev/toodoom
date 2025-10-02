@@ -18,8 +18,8 @@ export class TasksComponent {
 	public editTitle = '';
 	public editDesc = '';
 
-	public tasks: any = signal({ default: { tasks: [], tags: [] } });
-	public taskCategories = signal<{ id: string, name: string, color?: string, participants: string[] }[]>([]);
+	public tasks: any = signal({ default: { tasks: [], undone: 0, tags: [] } });
+	public taskCategories: any = signal<{ id: string, name: string, color?: string, participants: string[] }[]>([]);
 
 	public selectedCategory = '';
 	public selectedTag?: string = '';
@@ -48,12 +48,12 @@ export class TasksComponent {
 
 		const categories = Array.from(categoriesMap.values());
 		this.taskCategories.set(categories);
-		const categorizedTasks: any = { default: { tasks: [], tags: [] } };
+		const categorizedTasks: any = { default: { tasks: [], undone: 0, tags: [] } };
 
 		for (const task of tasks) {
 			const listName = task.expand?.list?.name || 'default';
 			if (!categorizedTasks[listName]) {
-				categorizedTasks[listName] = { tasks: [], tags: [] };
+				categorizedTasks[listName] = { tasks: [], undone: 0, tags: [] };
 			}
 			categorizedTasks[listName].tasks.push(task);
 			if (Array.isArray(task['tags'])) {
@@ -65,13 +65,11 @@ export class TasksComponent {
 		// Remove duplicate tags for each category
 		for (const key in categorizedTasks) {
 			categorizedTasks[key].tags = Array.from(new Set(categorizedTasks[key].tags));
-		}
-
-		for (const key in categorizedTasks) {
 			categorizedTasks[key].tasks.sort((a: ITask, b: ITask) => {
 				if (a.done === b.done) return 0;
 				return a.done ? 1 : -1;
 			});
+			categorizedTasks[key].undone = categorizedTasks[key].tasks.filter((t: ITask) => !t.done).length;
 		}
 
 		this.tasks.set(categorizedTasks);
@@ -101,7 +99,7 @@ export class TasksComponent {
 		const catMatch = editTask ? this.editTitle.match(CAT_TAG_CAPTURE) : this.title.match(CAT_TAG_CAPTURE);
 		const categoryMatch = catMatch ? catMatch[1] : '';
 
-		let category = this.taskCategories().find(cat => (cat.name == categoryMatch)
+		let category = this.taskCategories().find((cat: any) => (cat.name == categoryMatch)
 			|| (categoryMatch == '' && cat.name == this.selectedCategory));
 
 		if (!category && categoryMatch) {
@@ -169,7 +167,7 @@ export class TasksComponent {
 		const listName = category?.id ? category.name : 'default';
 
 		if (!allTasks[listName]) {
-			allTasks[listName] = { tasks: [], tags: [] };
+			allTasks[listName] = { tasks: [], undone: 0, tags: [] };
 		}
 
 		if (editTask) {
@@ -184,6 +182,8 @@ export class TasksComponent {
 				allTasks[listName].tags = Array.from(new Set([...(allTasks[listName].tags || []), ...task.tags]));
 			}
 		}
+
+		allTasks[listName].undone = allTasks[listName].tasks.filter((t: ITask) => !t.done).length;
 
 		this.tasks.set(allTasks);
 
@@ -210,6 +210,7 @@ export class TasksComponent {
 		const allTasks = { ...this.tasks() };
 		for (const key in allTasks) {
 			allTasks[key].tasks = allTasks[key].tasks.filter((t: ITask) => t.id !== id);
+			allTasks[key].undone = allTasks[key].tasks.filter((t: ITask) => !t.done).length;
 		}
 		this.tasks.set(allTasks);
 
@@ -252,6 +253,7 @@ export class TasksComponent {
 	async completeAll() {
 		this.tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory].tasks.forEach(async (task: ITask) => {
 			if (!task.done) task.done = true;
+			this.tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory].undone = 0;
 			await this.pb.toggleTaskCompletion(task.id, true);
 		});
 	}
@@ -275,7 +277,7 @@ export class TasksComponent {
 	}
 
 	async organize() {
-		let category = this.taskCategories().find(cat => (cat.name == this.selectedCategory));
+		let category = this.taskCategories().find((cat: any) => (cat.name == this.selectedCategory));
 		if (!category) return;
 		await this.pb.organize(category.id);
 		await this.getTasks();
