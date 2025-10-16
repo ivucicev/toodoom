@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
 	currentComponent?: any = null;
 	emails = '';
   username: string = '';
-  appVersion: string = 'v0.6.3';
+  appVersion: string = 'v0.6.4';
 	sharedInvites: any = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
