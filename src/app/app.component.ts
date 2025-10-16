@@ -40,6 +40,7 @@ export class AppComponent implements OnInit {
 	currentUserId = '';
 	lastInactiveMs = 0;
 
+	// Supported navigation targets displayed in the header.
 	readonly appModes: AppMode[] = ['tasks', 'notes', 'notepad'];
 	readonly modeLabels: Record<AppMode, string> = {
 		tasks: 'Tasks',
@@ -126,6 +127,7 @@ export class AppComponent implements OnInit {
 
 	toggleTheme() {
 		const html = document.documentElement;
+		// Store the preferred theme so the UI stays consistent on reload.
 		if (html.hasAttribute('data-theme') && html.getAttribute('data-theme') === 'dark') {
 			html.removeAttribute('data-theme');
 			this.isDark = false;
