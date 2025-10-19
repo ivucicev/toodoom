@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+// Patch: added single comment\nimport { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit { // note: patch applied
 
 	title = 'Toodoom';
 
