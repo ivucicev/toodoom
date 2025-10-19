@@ -6,6 +6,7 @@ import { ToastService } from './core/toast.service';
 import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
+import { Component, NgZone, OnInit } from '@angular/core';
 
 // header tabs
 type AppMode = 'tasks' | 'notes' | 'notepad';
@@ -33,8 +34,8 @@ export class AppComponent implements OnInit { // note: patch applied
 	isDark = false;
 	currentComponent?: any = null;
 	emails = '';
-  username: string = '';
-  appVersion: string = 'v0.6.4';
+	username: string = '';
+	appVersion: string = 'v0.7.0';
 	sharedInvites: any = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
