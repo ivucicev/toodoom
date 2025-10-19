@@ -33,7 +33,8 @@ export class AppComponent implements OnInit {
 	isDark = false;
 	currentComponent?: any = null;
 	emails = '';
-	username: string = '';
+  username: string = '';
+  appVersion: string = 'v0.6.4';
 	sharedInvites: any = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
