@@ -1,3 +1,4 @@
+/** Minor: format import block for consistency */
 import { Injectable } from '@angular/core';
 
 @Injectable({
