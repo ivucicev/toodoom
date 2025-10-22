@@ -140,7 +140,7 @@ export class AppComponent implements OnInit { // note: patch applied
 			html.setAttribute('data-theme', 'dark');
 			localStorage.setItem('theme', 'dark');
 		}
-		this.changeMetaTheme()
+		this.changeMetaTheme(); // ensure meta theme updated
 	}
 
 	setTheme() {
@@ -151,7 +151,7 @@ export class AppComponent implements OnInit { // note: patch applied
 			html.setAttribute('data-theme', 'dark');
 		}
 
-		this.changeMetaTheme()
+		this.changeMetaTheme(); // ensure meta theme updated
 
 	}
 
