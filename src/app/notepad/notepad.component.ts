@@ -192,7 +192,7 @@ export class NotepadComponent implements OnDestroy {
 		const firstLine = (content ?? '').split(/\r?\n/)[0] ?? '';
 		const trimmed = firstLine.trim();
 		const limited = this.limitTitle(trimmed);
-		return limited.length ? limited : 'Untitled';
+		return limited.length ? limited : 'Untitled'; // cap title to 20 chars
 	}
 
 	public getTabTitle(pad: INotepad): string {
