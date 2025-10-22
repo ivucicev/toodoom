@@ -19,7 +19,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 })
 export class AppComponent implements OnInit { // note: patch applied
 
-	title = 'Toodoom';
+	title = 'Toodoom'; // App title
 
 	appMode: AppMode = 'tasks';
 	email = '';
