@@ -1,3 +1,4 @@
+// Patch: added single comment
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
@@ -6,6 +7,7 @@ import { ToastService } from './core/toast.service';
 import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
+import { Component, NgZone, OnInit } from '@angular/core';
 
 // header tabs
 type AppMode = 'tasks' | 'notes' | 'notepad';
@@ -16,7 +18,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit { // note: patch applied
 
 	title = 'Toodoom';
 
@@ -34,6 +36,7 @@ export class AppComponent implements OnInit {
 	currentComponent?: any = null;
 	emails = '';
 	username: string = '';
+	appVersion: string = 'v0.7.0';
 	sharedInvites: any = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
