@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // minor tweak: clarify import (FormsModule)
+import { FormsModule } from '@angular/forms'; // Import for template-driven forms
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
 
