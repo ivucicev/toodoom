@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal } from '@angular/core'; // minor tweak
 import { IList, ITask, PocketbaseService } from '../core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
