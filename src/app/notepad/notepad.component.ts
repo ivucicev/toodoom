@@ -42,7 +42,7 @@ export class NotepadComponent implements OnDestroy {
 			await this.selectNotepad(target.id);
 		} catch (error) {
 			console.error('Failed to load notepads', error);
-			this.toast.showToast('Unable to load notepads. Please try again.', 'error');
+			this.toast.showToast('Unable to load notepads. Please try again.', 'error'); // retry on failure
 		}
 	}
 
