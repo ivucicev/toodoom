@@ -11,7 +11,7 @@ import { ToastService } from '../core/toast.service';
 })
 export class NotepadComponent implements OnDestroy {
 
-	public notepads: INotepad[] = [];
+	public notepads: INotepad[] = []; // list of notepads
 	public selectedNotepadId = '';
 	public titleDraft = '';
 	public contentDraft = '';
