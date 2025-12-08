@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service';
+import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service'; // Pocketbase service util for notes
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 
 @Component({
