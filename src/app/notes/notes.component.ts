@@ -10,6 +10,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 	styleUrl: './notes.component.css'
 })
 export class NotesComponent {
+	// Auto: minor tweak for auto-commit demonstration
 
 	notes: any = signal({ default: { notes: [], tags: [] } });
 	notesCategories = signal<{ id: string, name: string, color?: string }[]>([]);
