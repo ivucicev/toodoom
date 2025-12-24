@@ -46,7 +46,7 @@ export class NotepadComponent implements OnDestroy {
 		}
 	}
 
-	async selectNotepad(id: string) { // called when a notepad is selected
+	async selectNotepad(id: string) { // invoked when a notepad is selected
 		if (this.saveTimer) {
 			clearTimeout(this.saveTimer);
 			this.saveTimer = null;
