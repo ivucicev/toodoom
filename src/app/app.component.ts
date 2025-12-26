@@ -1,3 +1,4 @@
+// Auto-update: minor comment added by automation on 2025-12-26 06:30:51
 // Patch: minor comment tweak
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
