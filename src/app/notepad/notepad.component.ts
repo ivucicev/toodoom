@@ -147,7 +147,7 @@ export class NotepadComponent implements OnDestroy {
 			: this.computeTitle(this.contentDraft);
 		this.titleDraft = desiredTitle;
 
-		//if (pad.title === desiredTitle && pad.content === this.contentDraft) return;
+		// If no changes detected, skip saving (line previously commented out)
 
 		this.isSaving = true;
 		try {
