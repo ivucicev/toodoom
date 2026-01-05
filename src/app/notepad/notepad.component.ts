@@ -27,6 +27,7 @@ export class NotepadComponent implements OnDestroy {
 	}
 
 	async refreshData() {
+		// Auto-commit: minor comment tweak for clarity
 		try {
 			const notepads = await this.pb.getNotepads();
 			this.notepads = [...notepads];
