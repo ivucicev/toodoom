@@ -18,6 +18,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit { // note: patch applied - auto-update
+	// Automated minor edit: non-functional comment for PR tracking
 
 	title = 'Toodoom'; // App title
 
