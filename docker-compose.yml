@@ -20,6 +20,6 @@ services:
         ports:
             - "8021:8090"
         volumes:
-            - /server/pb_data:/pb/pb_data
-            - /server/pb_migrations:/pb/pb_migrations:ro
-            - /server/pb_hooks:/pb/pb_hooks:ro
+            - /home/apps/toodom/server/pb_data:/pb/pb_data
+            - /home/apps/toodom/server/pb_migrations:/pb/pb_migrations:ro
+            - /home/apps/toodom/server/pb_hooks:/pb/pb_hooks:ro
