@@ -282,7 +282,7 @@ export class TasksComponent {
 		await this.getTasks();
 	}
 
-	async colorChange(color: any, category: { id: string, name: string }) {
+	async colorChange(color: any, category: { id: string, name: string, color: string }) {
 		await this.pb.updateList(category as IList);
 		const nextColor = typeof color?.target?.value === 'string' ? color.target.value : category?.color;
 		if (!nextColor) return;

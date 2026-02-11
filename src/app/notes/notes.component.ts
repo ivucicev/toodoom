@@ -188,7 +188,7 @@ export class NotesComponent {
 		await this.getNotes();
 	}
 
-	async colorChange(color: any, category: { id: string, name: string }) {
+	async colorChange(color: any, category: { id: string, name: string, color?: string }) {
 		await this.pb.updateNoteList(category as INoteList);
 		const nextColor = typeof color?.target?.value === 'string' ? color.target.value : category?.color;
 		if (!nextColor) return;
