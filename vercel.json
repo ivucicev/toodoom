@@ -58,7 +58,7 @@
 	"rewrites": [
 		{
 			"source": "/api/:path*",
-			"destination": "http://toodoom.eenvo.io:8080/api/:path*"
+			"destination": "https://toodoom.eenvo.io/api/:path*"
 		},
 		{
 			"source": "/((?!ngsw\\.json|ngsw-worker\\.js|safety-worker\\.js|assets|.*\\..*).*)",
