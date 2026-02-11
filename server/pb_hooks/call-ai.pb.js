@@ -11,7 +11,7 @@ routerAdd("GET", "/api/organize-list/{id}", (e) => {
         .bind({ list: listId })
         .all(tasks);
 
-    $app.logger().error(tasks);
+    $app.logger().error(JSON.stringify(tasks));
 
     const msgs = [
         { role: "user", content: JSON.stringify(tasks) },
@@ -26,22 +26,94 @@ routerAdd("GET", "/api/organize-list/{id}", (e) => {
         },
         body: JSON.stringify({
             model: "gpt-4o-mini",
-            instructions: `You are an AI helper. You will get list of tasks, and you should sort them logically, and add tags for example you get list apples, meat, flip flops, bananas, t-shirt, should be sorted as apples #food, bananas #food, meat #food, flip-flops #clothes, t-shirt #clothes. To order them change position in given object. Do not change task text. Return same array but with given position. Tags add to Tags array comma separated example Apples tags: ["fruit", "food"], but leave existing. Return ONLY object that was sent.`,
+            instructions: `You are an AI helper. You will get a list of tasks and must ensure each task has a category tag, in the SAME LANGUAGE as the task text (e.g., Croatian tasks should get Croatian category tags). Use a single category tag per task plus keep existing tags. Then sort tasks by category (group all same-category together), and within each category sort alphabetically by title. Do not change task text or ids. Return JSON only.`,
+            text: {
+                format: {
+                    type: "json_schema",
+                    name: "organized_tasks",
+                    schema: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                            tasks: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    additionalProperties: false,
+                                    properties: {
+                                        id: { type: "string" },
+                                        title: { type: "string" },
+                                        tags: { type: "array", items: { type: "string" } }
+                                    },
+                                    required: ["id", "title", "tags"]
+                                }
+                            }
+                        },
+                        required: ["tasks"]
+                    },
+                    strict: true
+                }
+            },
             input: [...msgs]
         })
     });
+
+    if (!res || (res.statusCode && res.statusCode >= 400)) {
+        $app.logger().error("AI request failed:", JSON.stringify(res));
+        return e.json(500, { message: "AI request failed." });
+    }
 
     let textChunks = res.json.output
         ?.flatMap(o => o.content || [])
         .filter(c => c.type === "output_text")
         .map(c => c.text);
 
-    let responseMessage = textChunks[0];
+    let responseMessage = textChunks?.[0];
 
-    const updated = JSON.parse(responseMessage);
+    if (!responseMessage) {
+        $app.logger().error("AI response missing output_text:", JSON.stringify(res.json));
+        return e.json(500, { message: "No AI response received." });
+    }
 
-    updated.forEach(task => {
-        $app.db().update('tasks', { tags: task.tags, position: task.position },
+    let parsed;
+    try {
+        parsed = JSON.parse(responseMessage);
+    } catch (err) {
+        $app.logger().error("AI response JSON parse failed:", responseMessage);
+        return e.json(500, { message: "AI returned invalid JSON." });
+    }
+
+    const updated = parsed.tasks || [];
+
+    const alpha = (s) => String(s || "").toLowerCase().trim();
+    const categoryFromTags = (task) => {
+        const tags = Array.isArray(task.tags) ? task.tags : [];
+        const normalized = tags.map(t => String(t).replace(/^#/, "").toLowerCase().trim());
+        const primary = normalized.find(t => t && t !== "food");
+        return primary || "misc";
+    };
+
+    const sorted = updated
+        .filter(t => t && t.id)
+        .sort((a, b) => {
+            const aCat = categoryFromTags(a);
+            const bCat = categoryFromTags(b);
+            if (aCat !== bCat) return aCat.localeCompare(bCat);
+            return alpha(a.title).localeCompare(alpha(b.title));
+        });
+
+    const normalizeTags = (tags) => {
+        if (Array.isArray(tags)) {
+            return JSON.stringify(tags);
+        }
+        if (typeof tags === "string") {
+            return tags;
+        }
+        return JSON.stringify([]);
+    };
+
+    sorted.forEach((task, index) => {
+        $app.db().update('tasks', { tags: normalizeTags(task.tags), position: index },
             $dbx.exp(`"id" = {:id}`, { id: task.id }))
             .execute();
     });
