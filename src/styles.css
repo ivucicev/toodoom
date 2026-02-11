@@ -27,9 +27,9 @@ app-root {
 [data-theme="dark"] {
     --bg: #0f1216;
     --text: #e8eef6;
-    --card-text: #1f2a36;
+    --card-text: #eef3f9;
     --muted: #9aa7b4;
-    --card-muted: #5a6876;
+    --card-muted: #c0c9d6;
     --shadow: 0 8px 24px rgba(0, 0, 0, .12);
     --shadow-soft: 0 2px 10px rgba(0, 0, 0, .06);
 }
@@ -125,11 +125,11 @@ header h1 {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 10px;
+    bottom: 24px;
     display: flex;
     justify-content: center;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, rgba(246, 248, 251, .96), rgba(246, 248, 251, .6));
+    background: transparent;
     z-index: 5000;
     pointer-events: none;
 }
@@ -139,7 +139,7 @@ header h1 {
 }
 
 [data-theme="dark"] .bottom-tabbar {
-    background: linear-gradient(to top, rgba(15, 18, 22, .96), rgba(15, 18, 22, .6));
+    background: transparent;
 }
 
 .mode-switcher {
@@ -367,8 +367,13 @@ header h1 {
 :root[data-theme="dark"] input,
 :root[data-theme="dark"] textarea,
 :root[data-theme="dark"] select {
-    color: var(--card-text);
-    -webkit-text-fill-color: var(--card-text);
+    color: var(--text);
+    -webkit-text-fill-color: var(--text);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: var(--muted);
 }
 
 .quick button {
@@ -424,11 +429,19 @@ header h1 {
     cursor: pointer
 }
 
-/* Target iOS Safari to slightly increase dark overlay for gradients */
-@supports (-webkit-touch-callout: none) {
-    [data-theme="dark"] .card::after {
-        background: rgba(0, 0, 0, .42);
-    }
+/* Dark mode: add overlay for contrast instead of inverting */
+[data-theme="dark"] .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .38);
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="dark"] .card > * {
+    position: relative;
+    z-index: 1;
 }
 
 .card:not(:first-child) {
@@ -449,10 +462,6 @@ header h1 {
     margin: 0
 }
 
-/* Invert entire card in dark mode for readability */
-[data-theme="dark"] .card {
-    filter: invert(1);
-}
 
 .card.done .title {
     text-decoration: line-through;
@@ -508,9 +517,44 @@ header h1 {
 }
 
 /* Inputs on dark card */
-/*[data-theme="dark"] .card .title-input, [data-theme="dark"] .card .desc-input { color: #eef3f9; }
-        [data-theme="dark"] .card .title-input::placeholder, [data-theme="dark"] .card .desc-input::placeholder { color: #cfd8e4; }
-*/
+[data-theme="dark"] .card .title-input,
+[data-theme="dark"] .card .desc-input {
+    color: #eef3f9;
+    -webkit-text-fill-color: #eef3f9;
+}
+
+[data-theme="dark"] .card .title-input::placeholder,
+[data-theme="dark"] .card .desc-input::placeholder {
+    color: #cfd8e4;
+    opacity: .85;
+}
+
+[data-theme="dark"] .title-input,
+[data-theme="dark"] .desc-input {
+    color: #eef3f9;
+    -webkit-text-fill-color: #eef3f9;
+}
+
+[data-theme="dark"] .title-input::placeholder,
+[data-theme="dark"] .desc-input::placeholder {
+    color: #cfd8e4;
+    opacity: .85;
+}
+
+/* Force dark-mode text + placeholders for task inputs (Safari/Chrome) */
+[data-theme="dark"] .title-input,
+[data-theme="dark"] .desc-input {
+    color: #eef3f9 !important;
+    -webkit-text-fill-color: #eef3f9 !important;
+}
+
+[data-theme="dark"] .title-input::placeholder,
+[data-theme="dark"] .desc-input::placeholder,
+[data-theme="dark"] .title-input::-webkit-input-placeholder,
+[data-theme="dark"] .desc-input::-webkit-input-placeholder {
+    color: #cfd8e4 !important;
+    opacity: .85;
+}
 .desc-input {
     display: block;
     width: 100%;
@@ -528,6 +572,18 @@ header h1 {
 .title-input::placeholder,
 .desc-input::placeholder {
     color: #8a95a3;
+}
+
+[data-theme="dark"] .title-input,
+[data-theme="dark"] .desc-input {
+    color: #eef3f9;
+    -webkit-text-fill-color: #eef3f9;
+}
+
+[data-theme="dark"] .title-input::placeholder,
+[data-theme="dark"] .desc-input::placeholder {
+    color: #cfd8e4;
+    opacity: .85;
 }
 
 .tags {
@@ -726,7 +782,23 @@ header h1 {
 
 /* Dark mode for notes */
 [data-theme="dark"] .note-card {
-    filter: invert(1);
+    background: #1d2430 !important;
+    color: #eef3f9;
+}
+
+[data-theme="dark"] .note-card .tags {
+    color: #c0c9d6;
+}
+
+[data-theme="dark"] .note-input {
+    color: #eef3f9;
+    -webkit-text-fill-color: #eef3f9;
+}
+
+[data-theme="dark"] .note-input::placeholder,
+[data-theme="dark"] .note-input::-webkit-input-placeholder {
+    color: #cfd8e4;
+    opacity: .85;
 }
 
 /* Suggestions dropdown */
@@ -1092,4 +1164,40 @@ header h1 {
     background: var(--bg) !important;
 	opacity: 1;
 	border-bottom: 0;
+}
+
+/* Final override: task input text + placeholders in dark mode */
+[data-theme="dark"] .tasks-list .title-input,
+[data-theme="dark"] .tasks-list .desc-input,
+[data-theme="dark"] .tasks-list input.title-input,
+[data-theme="dark"] .tasks-list textarea.desc-input {
+    color: #eef3f9 !important;
+    -webkit-text-fill-color: #eef3f9 !important;
+}
+
+[data-theme="dark"] .tasks-list .title-input::placeholder,
+[data-theme="dark"] .tasks-list .desc-input::placeholder,
+[data-theme="dark"] .tasks-list input.title-input::-webkit-input-placeholder,
+[data-theme="dark"] .tasks-list textarea.desc-input::-webkit-input-placeholder {
+    color: #cfd8e4 !important;
+    opacity: .85;
+}
+
+/* Absolute override for task cards in dark mode */
+[data-theme="dark"] .tasks-list .card {
+    color: #eef3f9 !important;
+}
+
+[data-theme="dark"] .tasks-list .card input,
+[data-theme="dark"] .tasks-list .card textarea {
+    color: #eef3f9 !important;
+    -webkit-text-fill-color: #eef3f9 !important;
+}
+
+[data-theme="dark"] .tasks-list .card input::placeholder,
+[data-theme="dark"] .tasks-list .card textarea::placeholder,
+[data-theme="dark"] .tasks-list .card input::-webkit-input-placeholder,
+[data-theme="dark"] .tasks-list .card textarea::-webkit-input-placeholder {
+    color: #cfd8e4 !important;
+    opacity: .85;
 }
