@@ -371,9 +371,9 @@ export class PocketbaseService {
 		if (parts.length < 2) return null;
 		try {
 			const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-			const json = typeof atob === 'function'
-				? atob(base64)
-				: Buffer.from(base64, 'base64').toString('utf-8');
+			const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+			const json = typeof atob === 'function' ? atob(padded) : null;
+			if (!json) return null;
 			const payload = JSON.parse(json);
 			return typeof payload.exp === 'number' ? payload.exp * 1000 : null;
 		} catch {
