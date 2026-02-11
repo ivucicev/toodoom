@@ -85,6 +85,7 @@ export class PocketbaseService {
 	private syncingOfflineData = false;
 	private pb: PocketBase;
 	public currentUser!: any;
+	private refreshTimer?: ReturnType<typeof setInterval>;
 
 	public notes = signal([]);
 	public noteTags = signal<string[]>([]);
@@ -93,10 +94,14 @@ export class PocketbaseService {
 	constructor(private toast: ToastService) {
 		this.pb = new PocketBase(environment.api);
 		this.pb.autoCancellation(false);
+		this.pb.authStore.onChange(() => {
+			this.syncCurrentUser();
+		}, true);
 		this.syncCurrentUser();
 		if (this.hasSession()) {
 			this.syncOfflineDataToServer().catch(err => console.error('Failed to sync offline data on init', err));
 		}
+		this.startAuthRefreshLoop();
 	}
 
 	private hasSession(): boolean {
@@ -295,10 +300,15 @@ export class PocketbaseService {
 	getPb = () => this.pb;
 
 	async refreshAuth() {
-		const res = await this.pb.collection('users').authRefresh();
-		this.pb.authStore.save(res.token, res.record);
-		this.syncCurrentUser();
-		await this.syncOfflineDataToServer();
+		if (!this.hasSession()) return;
+		try {
+			const res = await this.pb.collection('users').authRefresh();
+			this.pb.authStore.save(res.token, res.record);
+			this.syncCurrentUser();
+			await this.syncOfflineDataToServer();
+		} catch (err) {
+			console.error('Auth refresh failed:', err);
+		}
 	}
 
 	async login(email: string, password: string) {
@@ -335,6 +345,40 @@ export class PocketbaseService {
 	logout() {
 		this.pb.authStore.clear();
 		this.syncCurrentUser();
+	}
+
+	private startAuthRefreshLoop() {
+		if (this.refreshTimer) return;
+		this.refreshTimer = setInterval(() => {
+			if (!this.hasSession()) return;
+			if (this.shouldRefreshSoon()) {
+				this.refreshAuth().catch(err => console.error('Auth refresh failed:', err));
+			}
+		}, 60_000);
+	}
+
+	private shouldRefreshSoon() {
+		const expMs = this.getTokenExpMs();
+		if (!expMs) return false;
+		const now = Date.now();
+		return expMs - now < 5 * 60 * 1000;
+	}
+
+	private getTokenExpMs() {
+		const token = this.pb.authStore?.token;
+		if (!token) return null;
+		const parts = token.split('.');
+		if (parts.length < 2) return null;
+		try {
+			const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+			const json = typeof atob === 'function'
+				? atob(base64)
+				: Buffer.from(base64, 'base64').toString('utf-8');
+			const payload = JSON.parse(json);
+			return typeof payload.exp === 'number' ? payload.exp * 1000 : null;
+		} catch {
+			return null;
+		}
 	}
 
 	async getTasks() {

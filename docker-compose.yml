@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: docker/dockerfile.client
         ports:
-            - "4200:80"
+            - "8020:80"
         depends_on:
             - pocketbase
 
@@ -18,8 +18,8 @@ services:
             PB_ADMIN_EMAIL: "admin@admin.com"
             PB_ADMIN_PASSWORD: "admin123"
         ports:
-            - "8090:8090"
+            - "8021:8090"
         volumes:
-            - ./server/pb_data:/pb/pb_data
-            - ./server/pb_migrations:/pb/pb_migrations:ro
-            - ./server/pb_hooks:/pb/pb_hooks:ro
+            - /server/pb_data:/pb/pb_data
+            - /server/pb_migrations:/pb/pb_migrations:ro
+            - /server/pb_hooks:/pb/pb_hooks:ro
