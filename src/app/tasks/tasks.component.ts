@@ -23,11 +23,10 @@ export class TasksComponent {
 
 	public selectedCategory = '';
 	public selectedTag?: string = '';
-	public newTaskColor = { c1: '', c2: '' };
+	public newTaskColor = '';
 	public editTaskId = '';
 
 	constructor(private pb: PocketbaseService) {
-		this.newTaskColor = this.pb.softGradient(Math.random());
 		this.getTasks();
 
 		this.initSubscription();
@@ -60,7 +59,7 @@ export class TasksComponent {
 				categorizedTasks[listName].tags.push(...task['tags']);
 			}
 
-			task.grad = this.pb.softGradient(task.grad_seed);
+			task.color = task.expand?.list?.color || '#e8edf3';
 		}
 		// Remove duplicate tags for each category
 		for (const key in categorizedTasks) {
@@ -194,7 +193,7 @@ export class TasksComponent {
 		this.editTaskId = '';
 
 		this.selectedCategory = category?.name || '';
-		this.newTaskColor = this.pb.softGradient(Math.random());
+		this.newTaskColor = this.getCategoryColor(this.selectedCategory);
 	}
 
 	async editTask(task: ITask) {
@@ -285,6 +284,36 @@ export class TasksComponent {
 
 	async colorChange(color: any, category: { id: string, name: string }) {
 		await this.pb.updateList(category as IList);
+		const nextColor = typeof color?.target?.value === 'string' ? color.target.value : category?.color;
+		if (!nextColor) return;
+
+		this.taskCategories.set(this.taskCategories().map((cat: any) =>
+			cat.id === category.id ? { ...cat, color: nextColor } : cat
+		));
+
+		const allTasks = { ...this.tasks() };
+		const key = category.name || 'default';
+		if (allTasks[key]) {
+			allTasks[key].tasks = allTasks[key].tasks.map((task: ITask) => {
+				const next = { ...task } as any;
+				next.color = nextColor;
+				if (next.expand?.list) {
+					next.expand.list = { ...next.expand.list, color: nextColor };
+				}
+				return next;
+			});
+		}
+		this.tasks.set(allTasks);
+	}
+
+	getCategoryColor(name?: string) {
+		if (!name) return '#cfd8e4';
+		const category = this.taskCategories().find((cat: any) => cat.name === name);
+		return category?.color || '#cfd8e4';
+	}
+
+	getTaskColor(task: ITask) {
+		return (task as any)?.expand?.list?.color || (task as any)?.color || '#cfd8e4';
 	}
 
 	ngOnDestroy() {

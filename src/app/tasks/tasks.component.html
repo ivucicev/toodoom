@@ -48,8 +48,7 @@
     }
 </div>
 <div class="list tasks-list" id="list">
-    <article class="card enter" [style.--c1]="newTaskColor.c1" [style.--c2]="newTaskColor.c2"
-        [style.background]="'linear-gradient(135deg,' + newTaskColor.c1 + ', ' + newTaskColor.c2 + ')'">
+    <article class="card enter" [style.background]="getCategoryColor(selectedCategory)">
         <form (ngSubmit)="upsertTask()">
             <div class="rowx">
                 <div class="mention-container mention-grow">
@@ -81,8 +80,7 @@
     @for(task of tasks()[this.selectedCategory == '' ? 'default' : this.selectedCategory]?.tasks; track task) {
     @if(selectedTag == '' || task.tags.includes(selectedTag)) {
     @if (editTaskId == task.id) {
-    <article class="card enter" [style.--c1]="task?.grad?.c1" [style.--c2]="task?.grad?.c2"
-        [style.background]="'linear-gradient(135deg,' + task?.grad?.c1 + ', ' + task?.grad?.c2 + ')'"
+    <article class="card enter" [style.background]="getTaskColor(task)"
         style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
         <form (submit)="upsertTask(task)">
             <div class="rowx">
@@ -121,9 +119,8 @@
     </article>
     } @else {
     <article (click)="!task.done && editTask(task)" (dblclick)="toggleTask($event, task)" class="card enter"
-        [class.done]="task.done" [class.solving]="!task.done" [class.solving]="task.done" [style.--c1]="task?.grad?.c1"
-        [style.--c2]="task?.grad?.c2"
-        
+        [class.done]="task.done" [class.solving]="!task.done" [class.solving]="task.done"
+        [style.background]="getTaskColor(task)"
         style="z-index: 1000;" [style.animationDelay]="$index * 50 + 'ms'">
         <div class="rowx">
             <h2 class="title">{{ task.title }}</h2>

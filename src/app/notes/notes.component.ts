@@ -18,7 +18,7 @@ export class NotesComponent {
 	text: string = '';
 	editText: string = '';
 	editNoteId: string = '';
-	newNoteColor = { c1: '', c2: '' };
+	newNoteColor = '';
 
 	constructor(private pb: PocketbaseService) {
 		this.getNotes();
@@ -50,7 +50,7 @@ export class NotesComponent {
 				categorizedNotes[listName].tags.push(...note['tags']);
 			}
 
-			note.grad = this.pb.softGradient(note.grad_seed);
+			note.color = note.expand?.list?.color || note.color || '#e8edf3';
 		}
 
 		for (const key in categorizedNotes) {
@@ -120,7 +120,6 @@ export class NotesComponent {
 			const newTags = [...this.editText.matchAll(HASH_TAG_CAPTURE)].map(m => m[1]);
 			note.tags = Array.from(new Set([...(editNote.tags || []), ...newTags]));
 		} else {
-			const grad = this.pb.softGradient(Math.random())
 			note = {
 				id: '',
 				text: this.text.replace(STRIP_TAG_OR_MENTION, '').replace(STRIP_TAG_OR_MENTION, '').trim(),
@@ -130,7 +129,7 @@ export class NotesComponent {
 				pinned: false,
 				archived: false,
 				user: this.pb.currentUser.id,
-				color: 'linear-gradient(135deg,' + grad?.c1 + ', ' + grad?.c2 + ')'
+				color: category?.color || '#e8edf3'
 			}
 		}
 
@@ -165,7 +164,7 @@ export class NotesComponent {
 		this.editNoteId = '';
 
 		this.selectedCategory = category?.name || '';
-		this.newNoteColor = this.pb.softGradient(Math.random());
+		this.newNoteColor = this.getCategoryColor(this.selectedCategory);
 	}
 
 	toggleCategory(name: any) {
@@ -191,6 +190,36 @@ export class NotesComponent {
 
 	async colorChange(color: any, category: { id: string, name: string }) {
 		await this.pb.updateNoteList(category as INoteList);
+		const nextColor = typeof color?.target?.value === 'string' ? color.target.value : category?.color;
+		if (!nextColor) return;
+
+		this.notesCategories.set(this.notesCategories().map((cat: any) =>
+			cat.id === category.id ? { ...cat, color: nextColor } : cat
+		));
+
+		const allNotes = { ...this.notes() };
+		const key = category.name || 'default';
+		if (allNotes[key]) {
+			allNotes[key].notes = allNotes[key].notes.map((note: INote) => {
+				const next = { ...note } as any;
+				next.color = nextColor;
+				if (next.expand?.list) {
+					next.expand.list = { ...next.expand.list, color: nextColor };
+				}
+				return next;
+			});
+		}
+		this.notes.set(allNotes);
+	}
+
+	getCategoryColor(name?: string) {
+		if (!name) return '#e8edf3';
+		const category = this.notesCategories().find((cat: any) => cat.name === name);
+		return category?.color || '#e8edf3';
+	}
+
+	getNoteColor(note: INote) {
+		return (note as any)?.expand?.list?.color || (note as any)?.color || '#e8edf3';
 	}
 
 	handleQuickSubmit(event: KeyboardEvent | any, mention: MentionableDirective, note?: INote) {

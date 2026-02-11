@@ -44,7 +44,7 @@
     }
 </div>
 <div class="list notes-grid" id="list">
-    <article class="note-card note-new">
+    <article class="note-card note-new" [style.background]="getCategoryColor(selectedCategory)">
         <form class="note-form mention-container" (submit)="upsertNote()">
             <textarea appMentionable #newMention="appMentionable" [(ngModel)]="text" name="text" class="note-input"
                 autofocus="" [mentionCategories]="notesCategories()"
@@ -67,7 +67,7 @@
     @for(note of notes()[selectedCategory == '' ? 'default' : selectedCategory]?.notes; track note) {
     @if(selectedTag == '' || note.tags.includes(selectedTag)) {
     @if (editNoteId == note.id) {
-    <article class="note-card note-new" [style.background]="note.color">
+    <article class="note-card note-new" [style.background]="getNoteColor(note)">
         <form class="note-form mention-container" (submit)="upsertNote(note)">
             <textarea appMentionable #editMention="appMentionable" [(ngModel)]="editText" name="text" class="note-input"
                 autofocus="" [mentionCategories]="notesCategories()"
@@ -88,7 +88,7 @@
         </form>
     </article>
     } @else {
-    <article class="note-card" (click)="editNote(note)" [style.background]="note.color">
+    <article class="note-card" (click)="editNote(note)" [style.background]="getNoteColor(note)">
         <p class="text" [innerHTML]="note.text"></p>
         <span class="pin" title="Pin/Unpin">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
