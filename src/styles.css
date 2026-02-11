@@ -121,6 +121,82 @@ header h1 {
     margin: 0
 }
 
+.bottom-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(246, 248, 251, .96), rgba(246, 248, 251, .6));
+    z-index: 5000;
+    pointer-events: none;
+}
+
+.bottom-tabbar .mode-switcher {
+    pointer-events: auto;
+}
+
+[data-theme="dark"] .bottom-tabbar {
+    background: linear-gradient(to top, rgba(15, 18, 22, .96), rgba(15, 18, 22, .6));
+}
+
+.mode-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #f2f5f9;
+    border: 1px solid #e5e9ef;
+    box-shadow: var(--shadow-soft);
+}
+
+.mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font: 600 13px/1 system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial;
+    cursor: pointer;
+}
+
+.mode-btn svg {
+    opacity: .75;
+}
+
+.mode-btn.active {
+    background: #ffffff;
+    color: var(--text);
+    border-color: #d9dee6;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+}
+
+.mode-btn.active svg {
+    opacity: 1;
+}
+
+.mode-btn:focus-visible {
+    outline: 2px solid #9fc5ff;
+    outline-offset: 2px;
+}
+
+[data-theme="dark"] .mode-switcher {
+    background: #151a21;
+    border-color: #2a3340;
+}
+
+[data-theme="dark"] .mode-btn.active {
+    background: #1d2430;
+    border-color: #2f3a4a;
+    box-shadow: none;
+}
+
 .chips {
     display: grid;
     gap: 6px
