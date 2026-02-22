@@ -1,5 +1,5 @@
 // Patch: minor comment tweak
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core'; // auto-note
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
