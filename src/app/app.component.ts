@@ -35,7 +35,7 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 	currentComponent?: any = null;
 	emails = '';
 	username: string = '';
-	appVersion: string = 'v0.7.0';
+	appVersion: string = '0.7.0';
 	sharedInvites: any = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
@@ -75,7 +75,12 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 
 	async authCheck() {
 		await this.pb.refreshAuth();
-		if (!this.pb.currentUser) return;
+		if (!this.pb.currentUser || this.pb.currentUser.id === 'offline-user') {
+			this.isLoggedIn = false;
+			this.username = '';
+			this.currentUserId = '';
+			return;
+		}
 		this.isLoggedIn = true;
 		const email = this.pb.currentUser['email'];
 		this.username = email.split('@')[0];
