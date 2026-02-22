@@ -21,5 +21,3 @@ services:
             - "8021:8090"
         volumes:
             - /home/apps/toodom/server/pb_data:/pb/pb_data
-            - /home/apps/toodom/server/pb_migrations:/pb/pb_migrations:ro
-            - /home/apps/toodom/server/pb_hooks:/pb/pb_hooks:ro
