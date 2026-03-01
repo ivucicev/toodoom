@@ -199,6 +199,7 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 		this.actionsModalOpen = false;
 	}
 
+	// Lifecycle hook: initializes app state
 	ngOnInit() {
 		let hiddenAt = 0;
 		this.zone.runOutsideAngular(() => {
