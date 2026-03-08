@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Import for template-driven forms
+import { FormsModule } from '@angular/forms'; // Template-driven forms import
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
 
@@ -290,7 +290,7 @@ export class NotepadComponent implements OnDestroy {
 		}
 	}
 
-	// No-op placeholders used by the shell when bound to the current component.
+	// No-op placeholders used by the shell when bound to the current component. // Auto-update: added comment
 	async completeAll() { }
 	async deleteCompletedTasks() { }
 
