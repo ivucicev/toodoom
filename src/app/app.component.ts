@@ -1,4 +1,4 @@
-// Patch: minor comment tweak
+// Patch: minor comment tweak - adjusted (auto-commit)
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
@@ -18,6 +18,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit { // note: patch applied - auto-update
+	// Automated minor edit: non-functional comment for PR tracking
 
 	title = 'Toodoom'; // App title
 

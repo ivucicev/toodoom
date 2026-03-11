@@ -1,4 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
+// Automated minor edit: PR trace
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
