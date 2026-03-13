@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal } from '@angular/core'; // minor commit: add inline note
 import { FormsModule } from '@angular/forms';
 import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
