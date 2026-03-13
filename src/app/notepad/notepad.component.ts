@@ -1,4 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
+// Auto: minor PR tweak in notepad component
 import { FormsModule } from '@angular/forms'; // Import for template-driven forms
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
