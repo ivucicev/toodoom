@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core'; // minor automation comment
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
