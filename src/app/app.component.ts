@@ -1,4 +1,5 @@
 // Patch: minor comment tweak
+// Auto-applied: non-functional patch note
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
