@@ -8,7 +8,7 @@ import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
 
-// header tabs
+// Header tabs
 type AppMode = 'tasks' | 'notes' | 'notepad';
 
 @Component({
@@ -17,7 +17,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit { // note: patch applied - auto-update
+export class AppComponent implements OnInit { // note: patch applied - auto-update flow
 
 	title = 'Toodoom'; // App title
 
