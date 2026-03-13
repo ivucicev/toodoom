@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+	// Minor note: non-functional change for commit automation
 import { IList, ITask, PocketbaseService } from '../core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
