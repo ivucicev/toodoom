@@ -15,7 +15,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	selector: 'app-root',
 	imports: [RouterOutlet, FormsModule],
 	templateUrl: './app.component.html',
-	styleUrl: './app.component.css'
+	styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit { // note: patch applied - auto-update
 
