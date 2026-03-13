@@ -9,7 +9,7 @@ import { ToastService } from '../core/toast.service';
 	templateUrl: './notepad.component.html',
 	styleUrl: './notepad.component.css'
 })
-export class NotepadComponent implements OnDestroy {
+export class NotepadComponent implements OnDestroy { // Minor formatting tweak
 
 	public notepads: INotepad[] = [];
 	public selectedNotepadId = '';
