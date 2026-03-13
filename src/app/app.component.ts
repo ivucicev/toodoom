@@ -8,7 +8,7 @@ import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
 
-// header tabs
+// header tabs - auto-comment
 type AppMode = 'tasks' | 'notes' | 'notepad';
 
 @Component({
