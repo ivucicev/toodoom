@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms'; // Import for template-driven form
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
 
+// NOTE: Non-functional comment added for PR traceability
+
 @Component({
 	selector: 'app-notepad',
 	imports: [FormsModule],
