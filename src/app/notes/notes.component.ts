@@ -1,3 +1,4 @@
+// NOTE: automated non-functional comment - safe cosmetic change
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service';
