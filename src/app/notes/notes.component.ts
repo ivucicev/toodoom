@@ -24,7 +24,7 @@ export class NotesComponent {
 		this.getNotes();
 	}
 
-	async getNotes() {
+	async getNotes() { // fetch notes
 		const notes: any = await this.pb.getNotes();
 
 		const categoriesMap = new Map<string, { id: string, name: string, color: string }>();
