@@ -1,4 +1,5 @@
 // Patch: minor comment tweak
+// Auto-update: minor change for commit automation
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
