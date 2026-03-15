@@ -2,7 +2,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // minor update: annotate form module
 import { ToastService } from './core/toast.service';
 import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
