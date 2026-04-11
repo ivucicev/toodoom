@@ -19,7 +19,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit { // note: patch applied - auto-update
+export class AppComponent implements OnInit { // note: patch applied - auto-update // minor: non-functional comment added
 
 	title = 'Toodoom'; // App title
 
