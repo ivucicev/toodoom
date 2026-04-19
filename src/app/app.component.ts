@@ -35,8 +35,8 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 	currentComponent?: any = null;
 	emails = '';
 	username: string = '';
-	appVersion: string = '0.7.0';
-	sharedInvites: any = [];
+	appVersion: string = '0.7.1';
+	sharedInvites: any[] = [];
 	registerEmail: string = '';
 	registerPassword: string = '';
 	registerPasswordConfirm: string = '';
