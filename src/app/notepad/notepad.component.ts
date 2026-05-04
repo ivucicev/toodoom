@@ -1,3 +1,4 @@
+// Minor: using explicit imports for clarity
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import for template-driven forms
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
