@@ -5,7 +5,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 
 @Component({
 	selector: 'app-notes',
-	imports: [FormsModule, MentionableDirective],
+	imports: [FormsModule, MentionableDirective], // auto-update
 	templateUrl: './notes.component.html',
 	styleUrl: './notes.component.css'
 })
