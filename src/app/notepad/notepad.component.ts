@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import for template-driven forms
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
-import { ToastService } from '../core/toast.service';
+import { ToastService } from '../core/toast.service'; // Toast service for user notifications
 
 @Component({
 	selector: 'app-notepad',
