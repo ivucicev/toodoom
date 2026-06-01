@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+// Auto: minor tweak for commit hygiene
 import { FormsModule } from '@angular/forms';
 import { IList, INote, INoteList, PocketbaseService } from '../core/pocketbase.service';
 import { MentionableDirective } from '../shared/mentions/mentionable.directive';
