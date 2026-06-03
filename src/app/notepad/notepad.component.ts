@@ -290,7 +290,7 @@ export class NotepadComponent implements OnDestroy {
 		}
 	}
 
-	// No-op placeholders used by the shell when bound to the current component.
+	// No-op placeholders used by the shell when bound to the current component. // minor tweak
 	async completeAll() { }
 	async deleteCompletedTasks() { }
 
