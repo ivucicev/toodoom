@@ -19,7 +19,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 })
 export class AppComponent implements OnInit { // note: patch applied - auto-update
 
-	title = 'Toodoom'; // App title
+	title = 'Toodoom-dev'; // App title
 
 	appMode: AppMode = 'tasks';
 	email = '';
