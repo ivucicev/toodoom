@@ -1,4 +1,4 @@
-// Patch: minor comment tweak
+// Patch: minor comment tweak - auto-update applied (2026-06-21)
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
@@ -8,7 +8,8 @@ import { JsonPipe } from '@angular/common';
 import { distinctUntilChanged, fromEvent, map, merge, shareReplay } from 'rxjs';
 import { SwUpdate } from '@angular/service-worker';
 
-// header tabs
+	// header tabs
+	// minor: auto-update patch applied
 type AppMode = 'tasks' | 'notes' | 'notepad';
 
 @Component({
