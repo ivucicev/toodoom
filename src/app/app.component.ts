@@ -1,4 +1,4 @@
-// Patch: minor comment tweak
+// Patch: minor comment tweak — history note
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
