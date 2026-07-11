@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 // Patch: minor comment tweak
+=======
+// Patch: minor comment tweak // auto-update (edited)
+>>>>>>> Stashed changes
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
