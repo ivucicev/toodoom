@@ -28,7 +28,7 @@ export class NotepadComponent implements OnDestroy {
 
 	async refreshData() {
 		try {
-			const notepads = await this.pb.getNotepads();
+			const notepads = await this.pb.getNotepads(); // fetch notepads from Pocketbase
 			this.notepads = [...notepads];
 			this.rebuildCustomTitleCache();
 			if (!this.notepads.length) {
