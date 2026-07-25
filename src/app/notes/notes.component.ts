@@ -9,6 +9,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 	templateUrl: './notes.component.html',
 	styleUrl: './notes.component.css'
 })
+// minor comment: Notes feature component (no logic changes)
 export class NotesComponent {
 
 	notes: any = signal({ default: { notes: [], tags: [] } });
