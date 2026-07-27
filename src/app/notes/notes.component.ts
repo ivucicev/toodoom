@@ -9,7 +9,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 	templateUrl: './notes.component.html',
 	styleUrl: './notes.component.css'
 })
-export class NotesComponent {
+export class NotesComponent { // auto-update: minor comment tweak
 
 	notes: any = signal({ default: { notes: [], tags: [] } });
 	notesCategories = signal<{ id: string, name: string, color?: string }[]>([]);
