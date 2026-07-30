@@ -12,7 +12,7 @@ import { SwUpdate } from '@angular/service-worker';
 type AppMode = 'tasks' | 'notes' | 'notepad';
 
 @Component({
-	selector: 'app-root',
+	selector: 'app-root', // minor auto-change
 	imports: [RouterOutlet, FormsModule],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
