@@ -6,7 +6,7 @@ import { ToastService } from '../core/toast.service';
 @Component({
 	selector: 'app-notepad',
 	imports: [FormsModule],
-	templateUrl: './notepad.component.html', // minor tweak
+	templateUrl: './notepad.component.html', // minor tweak: path unchanged
 	styleUrl: './notepad.component.css'
 })
 export class NotepadComponent implements OnDestroy {
