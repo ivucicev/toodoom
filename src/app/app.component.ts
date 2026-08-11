@@ -1,5 +1,5 @@
-// Patch: minor comment tweak
-import { Component, NgZone, OnInit } from '@angular/core';
+// Patch: minor comment tweak (updated)
+import { Component, NgZone, OnInit } from '@angular/core'; // minor patch: keep imports tidy
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
 import { FormsModule } from '@angular/forms';
