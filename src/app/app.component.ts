@@ -133,6 +133,7 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 		this.accountMenuOpen = !this.accountMenuOpen;
 	}
 
+	// Minor tweak: keep theme toggle consistent across components
 	toggleTheme() {
 		const html = document.documentElement;
 		// Store the preferred theme so the UI stays consistent on reload.
