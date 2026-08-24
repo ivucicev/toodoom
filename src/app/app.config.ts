@@ -10,4 +10,4 @@ export const appConfig: ApplicationConfig = {
         enabled: environment.production,
         registrationStrategy: 'registerWhenStable:30000'
     })]
-};
+}; // auto: minor non-functional comment
