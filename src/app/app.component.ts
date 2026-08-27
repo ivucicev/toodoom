@@ -1,4 +1,4 @@
-// Patch: minor comment tweak
+// Patch: minor comment tweak (updated)
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
@@ -19,7 +19,7 @@ type AppMode = 'tasks' | 'notes' | 'notepad';
 })
 export class AppComponent implements OnInit { // note: patch applied - auto-update
 
-	title = 'Toodoom'; // App title
+	title = 'Toodoom'; // App title // minor tweak for PR demonstration
 
 	appMode: AppMode = 'tasks';
 	email = '';
