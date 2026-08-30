@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // Import for template-driven forms
+
+// Auto-update: minor comment for CI tracking
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
 
