@@ -6,7 +6,7 @@ import { MentionableDirective } from '../shared/mentions/mentionable.directive';
 @Component({
 	selector: 'app-notes',
 	imports: [FormsModule, MentionableDirective],
-	templateUrl: './notes.component.html',
+	templateUrl: './notes.component.html', // minor: added trailing comment
 	styleUrl: './notes.component.css'
 })
 export class NotesComponent {
