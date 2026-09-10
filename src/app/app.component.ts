@@ -251,3 +251,5 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 	}
 
 }
+
+// NOTE: Minor formatting tweak for demonstration
