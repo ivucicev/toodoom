@@ -1,4 +1,4 @@
-// Patch: minor comment tweak
+// Patch: minor comment tweak (updated)
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { PocketbaseService } from './core/pocketbase.service';
@@ -251,3 +251,5 @@ export class AppComponent implements OnInit { // note: patch applied - auto-upda
 	}
 
 }
+
+// Automated minor tweak: formatting only
