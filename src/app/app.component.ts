@@ -1,3 +1,4 @@
+// Minor: Non-functional comment added by automation
 // Patch: minor comment tweak (updated)
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
