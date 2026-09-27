@@ -1,4 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
+
+// NOTE: automated minor tweak: added traceability comment
 import { FormsModule } from '@angular/forms'; // Import for template-driven forms
 import { INotepad, PocketbaseService } from '../core/pocketbase.service';
 import { ToastService } from '../core/toast.service';
